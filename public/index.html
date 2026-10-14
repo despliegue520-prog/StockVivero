@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de stock</title>
+<style>
+  :root { --bg:#f6f7f5; --card:#fff; --txt:#1c2a1f; --mut:#5d6b61; --ac:#2f6b3f; --bd:#d8ddd9; --bad:#b3261e; --ok:#2f6b3f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141a16; --card:#1d251f; --txt:#e6ece7; --mut:#9aa89e; --ac:#6fc287; --bd:#334036; --bad:#ff8a80; --ok:#6fc287; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--txt); }
+  header { padding:1rem 1.25rem; border-bottom:1px solid var(--bd); }
+  h1 { margin:0; font-size:1.25rem; }
+  main { max-width:1000px; margin:0 auto; padding:1rem; display:grid; gap:1rem; }
+  section { background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:1rem; }
+  h2 { margin:0 0 .75rem; font-size:1.05rem; }
+  form { display:grid; gap:.6rem; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); align-items:end; }
+  label { display:grid; gap:.25rem; font-size:.85rem; color:var(--mut); }
+  input, select, button { font:inherit; padding:.5rem .6rem; border-radius:6px; border:1px solid var(--bd); background:var(--bg); color:var(--txt); }
+  button { background:var(--ac); color:#fff; border-color:var(--ac); cursor:pointer; font-weight:600; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--ac); outline-offset:2px; }
+  .tabla { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.92rem; }
+  th, td { text-align:left; padding:.5rem; border-bottom:1px solid var(--bd); white-space:nowrap; }
+  th { color:var(--mut); font-weight:600; }
+  .bajo { color:var(--bad); font-weight:700; }
+  .entrada { color:var(--ok); } .salida { color:var(--bad); }
+  #msg { min-height:1.4rem; font-weight:600; }
+  #msg.error { color:var(--bad); } #msg.ok { color:var(--ok); }
+</style>
+</head>
+<body>
+<header><h1>Control de stock</h1></header>
+<main>
+  <p id="msg" role="status" aria-live="polite"></p>
+
+  <section aria-labelledby="h-prod">
+    <h2 id="h-prod">Productos</h2>
+    <div class="tabla"><table>
+      <thead><tr><th>Código</th><th>Nombre</th><th>Unidad</th><th>Stock</th><th>Mínimo</th></tr></thead>
+      <tbody id="productos"></tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="h-nuevo">
+    <h2 id="h-nuevo">Nuevo producto</h2>
+    <form id="f-prod">
+      <label>Código <input name="codigo" required></label>
+      <label>Nombre <input name="nombre" required></label>
+      <label>Unidad <input name="unidad" value="unidad"></label>
+      <label>Stock mínimo <input name="stock_minimo" type="number" min="0" step="any" value="0"></label>
+      <button type="submit">Crear producto</button>
+    </form>
+  </section>
+
+  <section aria-labelledby="h-mov">
+    <h2 id="h-mov">Registrar movimiento</h2>
+    <form id="f-mov">
+      <label>Producto <select name="producto_id" id="sel-prod" required></select></label>
+      <label>Tipo
+        <select name="tipo">
+          <option value="entrada">Entrada</option>
+          <option value="salida">Salida</option>
+          <option value="ajuste">Ajuste (+/-)</option>
+        </select>
+      </label>
+      <label>Cantidad <input name="cantidad" type="number" step="any" required></label>
+      <label>Motivo <input name="motivo"></label>
+      <label>ID de tarea (opcional) <input name="tarea_id" type="number" min="1"></label>
+      <button type="submit">Registrar</button>
+    </form>
+  </section>
+
+  <section aria-labelledby="h-hist">
+    <h2 id="h-hist">Últimos movimientos</h2>
+    <div class="tabla"><table>
+      <thead><tr><th>Fecha</th><th>Producto</th><th>Tipo</th><th>Cantidad</th><th>Motivo</th><th>Tarea</th></tr></thead>
+      <tbody id="historial"></tbody>
+    </table></div>
+  </section>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let apiKey = sessionStorage.getItem('apiKey') || '';
+
+  function mensaje(texto, tipo) {
+    const m = $('msg');
+    m.textContent = texto;
+    m.className = tipo || '';
+  }
+
+  async function api(ruta, opciones = {}) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (apiKey) headers['x-api-key'] = apiKey;
+    let res = await fetch(ruta, { ...opciones, headers });
+    if (res.status === 401) {
+      apiKey = prompt('Ingresá la API key') || '';
+      sessionStorage.setItem('apiKey', apiKey);
+      headers['x-api-key'] = apiKey;
+      res = await fetch(ruta, { ...opciones, headers });
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Error ' + res.status);
+    return data;
+  }
+
+  function fila(celdas) {
+    const tr = document.createElement('tr');
+    celdas.forEach(({ texto, clase }) => {
+      const td = document.createElement('td');
+      td.textContent = texto;
+      if (clase) td.className = clase;
+      tr.appendChild(td);
+    });
+    return tr;
+  }
+
+  async function cargarProductos() {
+    const productos = await api('/productos');
+    const tbody = $('productos');
+    const sel = $('sel-prod');
+    tbody.replaceChildren();
+    sel.replaceChildren();
+    productos.forEach((p) => {
+      const bajo = Number(p.stock) <= Number(p.stock_minimo);
+      tbody.appendChild(fila([
+        { texto: p.codigo },
+        { texto: p.nombre },
+        { texto: p.unidad },
+        { texto: Number(p.stock) + (bajo ? ' (bajo)' : ''), clase: bajo ? 'bajo' : '' },
+        { texto: Number(p.stock_minimo) },
+      ]));
+      if (p.activo) {
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.textContent = `${p.codigo} - ${p.nombre}`;
+        sel.appendChild(o);
+      }
+    });
+  }
+
+  async function cargarHistorial() {
+    const movs = await api('/movimientos');
+    const tbody = $('historial');
+    tbody.replaceChildren();
+    movs.slice(0, 30).forEach((m) => {
+      tbody.appendChild(fila([
+        { texto: new Date(m.creado_en).toLocaleString('es-AR') },
+        { texto: `${m.codigo} - ${m.nombre}` },
+        { texto: m.tipo, clase: Number(m.cantidad) > 0 ? 'entrada' : 'salida' },
+        { texto: Number(m.cantidad) },
+        { texto: m.motivo || '' },
+        { texto: m.tarea_id || '' },
+      ]));
+    });
+  }
+
+  async function refrescar() {
+    await Promise.all([cargarProductos(), cargarHistorial()]);
+  }
+
+  $('f-prod').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target));
+    try {
+      await api('/productos', { method: 'POST', body: JSON.stringify(d) });
+      e.target.reset();
+      mensaje('Producto creado', 'ok');
+      await refrescar();
+    } catch (err) { mensaje(err.message, 'error'); }
+  });
+
+  $('f-mov').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target));
+    d.producto_id = Number(d.producto_id);
+    d.cantidad = Number(d.cantidad);
+    d.tarea_id = d.tarea_id ? Number(d.tarea_id) : null;
+    d.motivo = d.motivo || null;
+    try {
+      await api('/movimientos', { method: 'POST', body: JSON.stringify(d) });
+      e.target.reset();
+      mensaje('Movimiento registrado', 'ok');
+      await refrescar();
+    } catch (err) { mensaje(err.message, 'error'); }
+  });
+
+  refrescar().catch((err) => mensaje(err.message, 'error'));
+</script>
+</body>
+</html>
