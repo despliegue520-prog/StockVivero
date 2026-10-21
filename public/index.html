@@ -93,15 +93,42 @@
   }
 
   async function api(ruta, opciones = {}) {
-    const headers = { 'Content-Type': 'application/json' };
-    if (apiKey) headers['x-api-key'] = apiKey;
-    let res = await fetch(ruta, { ...opciones, headers });
-    if (res.status === 401) {
-      apiKey = prompt('Ingresá la API key') || '';
+    // Pedir la clave antes de hacer la primera petición.
+    if (!apiKey) {
+      const ingresada = prompt('Ingresá la API key configurada en el servidor:');
+      if (ingresada === null || !ingresada.trim()) {
+        throw new Error('Se necesita la API key para consultar los datos.');
+      }
+      apiKey = ingresada.trim();
       sessionStorage.setItem('apiKey', apiKey);
-      headers['x-api-key'] = apiKey;
-      res = await fetch(ruta, { ...opciones, headers });
     }
+
+    const realizarPeticion = () => {
+      const headers = {
+        ...(opciones.headers || {}),
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey
+      };
+      return fetch(ruta, { ...opciones, headers });
+    };
+
+    let res = await realizarPeticion();
+
+    // Si la clave no es válida, pedirla de nuevo y reintentar una sola vez.
+    if (res.status === 401) {
+      sessionStorage.removeItem('apiKey');
+      apiKey = '';
+
+      const ingresada = prompt('La API key fue rechazada. Ingresá la clave correcta:');
+      if (ingresada === null || !ingresada.trim()) {
+        throw new Error('Autenticación cancelada. No se pudieron cargar los datos.');
+      }
+
+      apiKey = ingresada.trim();
+      sessionStorage.setItem('apiKey', apiKey);
+      res = await realizarPeticion();
+    }
+
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Error ' + res.status);
     return data;
