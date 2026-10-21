@@ -23,6 +23,11 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Evitar que la solicitud automática del favicon llegue al middleware de API key.
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 // Protección opcional por API key
 app.use((req, res, next) => {
   const key = process.env.API_KEY;
