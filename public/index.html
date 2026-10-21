@@ -71,6 +71,16 @@
   .tox-azul { color:#245fb4; font-weight:700; }
   .tox-amarillo { color:#956b00; font-weight:700; }
   .empty { text-align:center; color:var(--mut); padding:1.25rem; }
+  .app-nav { background:#fff; border-bottom:1px solid var(--bd); position:sticky; top:0; z-index:20; box-shadow:0 3px 12px #1d30240a; }
+  .nav-inner { max-width:1400px; margin:auto; padding:.65rem clamp(.75rem,3vw,2rem); display:flex; gap:.5rem; overflow-x:auto; }
+  .nav-btn { width:auto; white-space:nowrap; background:transparent; color:var(--mut); border-color:transparent; padding:.65rem .85rem; }
+  .nav-btn:hover { background:var(--ac2); color:var(--ac); }
+  .nav-btn.active { background:var(--ac); color:#fff; }
+  [data-panel][hidden] { display:none !important; }
+  .panel-title { margin:0 0 .25rem; font-size:1.45rem; }
+  .panel-description { margin:0 0 1rem; color:var(--mut); }
+  .kpis { margin-top:.2rem; }
+  @media(max-width:560px) { .nav-inner { padding:.55rem .65rem; } .nav-btn { padding:.6rem .7rem; font-size:.82rem; } }
   footer { text-align:center; color:var(--mut); font-size:.8rem; padding:0 1rem 1.5rem; }
   @media(max-width:850px) { .layout-two { grid-template-columns:1fr; } }
   @media(max-width:560px) {
@@ -92,23 +102,32 @@
     <span class="status">● Control de stock</span>
   </div>
 </header>
+<nav class="app-nav" aria-label="Secciones principales"><div class="nav-inner">
+  <button class="nav-btn active" type="button" data-target="inicio" onclick="mostrarPanel('inicio',this)">⌂ Inicio</button>
+  <button class="nav-btn" type="button" data-target="productos" onclick="mostrarPanel('productos',this)">▦ Productos</button>
+  <button class="nav-btn" type="button" data-target="nuevo" onclick="mostrarPanel('nuevo',this)">＋ Nuevo producto</button>
+  <button class="nav-btn" type="button" data-target="movimientos" onclick="mostrarPanel('movimientos',this)">↕ Movimientos</button>
+  <button class="nav-btn" type="button" data-target="alertas" onclick="mostrarPanel('alertas',this)">⚠ Alertas</button>
+  <button class="nav-btn" type="button" data-target="resumen" onclick="mostrarPanel('resumen',this)">▤ Resumen</button>
+  <button class="nav-btn" type="button" data-target="historial" onclick="mostrarPanel('historial',this)">◷ Historial</button>
+</div></nav>
 
 <main>
-  <div class="intro">
+  <div class="intro" data-panel="inicio">
     <div><h2>Panel de inventario</h2><p>Consultá productos, registrá movimientos y controlá las alertas.</p></div>
     <button class="secondary" type="button" onclick="cargarDatos()" style="width:auto">↻ Actualizar datos</button>
   </div>
 
   <p id="msg" role="status" aria-live="polite"></p>
 
-  <div class="kpis" aria-label="Resumen del inventario">
+  <div class="kpis" data-panel="inicio" aria-label="Resumen del inventario">
     <article class="kpi-card"><span class="kpi-label">Productos registrados</span><strong class="kpi-value" id="kpi-total-prods">—</strong><div class="kpi-note">Productos en el catálogo</div></article>
     <article class="kpi-card"><span class="kpi-label">Categorías</span><strong class="kpi-value" id="kpi-total-cats">—</strong><div class="kpi-note">Categorías identificadas</div></article>
     <article class="kpi-card" id="kpi-alertas"><span class="kpi-label">Alertas de stock bajo</span><strong class="kpi-value">—</strong><div class="kpi-note">Productos que necesitan revisión</div></article>
   </div>
 
-  <section class="section">
-    <div class="section-head"><div><h3>📦 Catálogo de productos</h3><span class="muted">Buscá y filtrá los artículos del vivero.</span></div></div>
+  <section class="section" data-panel="productos">
+    <div class="section-head"><div><h2 class="panel-title">Productos</h2><h3>📦 Catálogo de productos</h3><span class="muted">Buscá y filtrá los artículos del vivero.</span></div></div>
     <div class="filters">
       <input id="buscador-catalogo" type="search" placeholder="Buscar por código, nombre, categoría o marca…" aria-label="Buscar productos" oninput="filtrarCatalogo()">
       <select id="filtro-categoria-select" aria-label="Filtrar por categoría" onchange="cambiarFiltroSelect(this.value)">
@@ -138,8 +157,8 @@
     </div>
   </section>
 
-  <div class="layout-two">
-    <section class="section">
+  <section class="section" data-panel="nuevo">
+    <h2 class="panel-title">Registrar producto</h2><p class="panel-description">Completá los datos para incorporar un artículo al catálogo.</p>
       <div class="section-head"><div><h3>＋ Registrar producto</h3><span class="muted">Agregá un artículo al inventario.</span></div></div>
       <form id="f-prod">
         <label>Código de producto<input name="codigo" required maxlength="60" placeholder="Ej.: OL-001"></label>
@@ -168,7 +187,9 @@
       <p class="muted" style="margin-bottom:0">Nota: la persistencia de categoría, subcategoría, marca y toxicidad depende de que esos campos estén soportados por el backend y la base de datos.</p>
     </section>
 
-    <section class="section">
+</section>
+  <section class="section" data-panel="movimientos">
+      <h2 class="panel-title">Movimientos de stock</h2><p class="panel-description">Registrá ingresos, salidas o ajustes de inventario.</p>
       <div class="section-head"><div><h3>↕ Registrar movimiento</h3><span class="muted">Ingresos, salidas o ajustes de stock.</span></div></div>
       <form id="f-mov">
         <label class="full">Producto<select name="producto_id" id="sel-prod" required><option value="">Cargando productos…</option></select></label>
@@ -179,27 +200,26 @@
         <div class="form-actions"><button type="submit">Registrar movimiento</button><button type="reset" class="secondary">Limpiar</button></div>
       </form>
     </section>
-  </div>
 
-  <section class="section">
-    <div class="section-head"><div><h3>⚠️ Alertas de stock bajo</h3><span class="muted">Productos cuyo stock actual está en el mínimo o por debajo.</span></div></div>
+  <section class="section" data-panel="alertas">
+    <div class="section-head"><div><h2 class="panel-title">Alertas de stock</h2><h3>⚠️ Alertas de stock bajo</h3><span class="muted">Productos cuyo stock actual está en el mínimo o por debajo.</span></div></div>
     <div class="tabla"><table>
       <thead><tr><th>Código</th><th>Categoría</th><th>Subcategoría</th><th>Marca</th><th>Producto</th><th>Stock actual</th><th>Stock mínimo</th></tr></thead>
       <tbody id="tabla-alertas"><tr><td class="empty" colspan="7">Cargando alertas…</td></tr></tbody>
     </table></div>
   </section>
 
-  <section class="section">
-    <div class="section-head"><div><h3>▤ Resumen de stock</h3><span class="muted">Totales agrupados por categoría, subcategoría, marca y unidad.</span></div></div>
+  <section class="section" data-panel="resumen">
+    <div class="section-head"><div><h2 class="panel-title">Resumen de stock</h2><h3>▤ Resumen de stock</h3><span class="muted">Totales agrupados por categoría, subcategoría, marca y unidad.</span></div></div>
     <div class="tabla"><table>
       <thead><tr><th>Categoría</th><th>Subcategoría</th><th>Marca</th><th>Unidad</th><th>Stock total</th></tr></thead>
       <tbody id="totales"><tr><td class="empty" colspan="5">El resumen estará disponible cuando el backend implemente esta consulta.</td></tr></tbody>
     </table></div>
   </section>
 
-  <section class="section">
+  <section class="section" data-panel="historial">
     <div class="section-head">
-      <div><h3>◷ Historial de movimientos</h3><span class="muted">Últimos movimientos registrados.</span></div>
+      <div><h2 class="panel-title">Historial de movimientos</h2><h3>◷ Historial de movimientos</h3><span class="muted">Últimos movimientos registrados.</span></div>
       <input id="buscador-historial" type="search" placeholder="Buscar en historial…" aria-label="Buscar movimientos" oninput="filtrarHistorial()" style="max-width:320px">
     </div>
     <div class="tabla"><table>
@@ -209,6 +229,34 @@
   </section>
 </main>
 <footer>StockVivero · Control de inventario para viveros</footer>
+<script>
+function mostrarPanel(nombre, boton) {
+  document.querySelectorAll('[data-panel]').forEach(panel => {
+    panel.hidden = panel.dataset.panel !== nombre;
+  });
+  document.querySelectorAll('.nav-btn').forEach(item => {
+    const activo = item.dataset.target === nombre;
+    item.classList.toggle('active', activo);
+    item.setAttribute('aria-current', activo ? 'page' : 'false');
+  });
+  const titulos = {
+    inicio: ['Inicio', 'Vista general del inventario y alertas importantes.'],
+    productos: ['Productos', 'Consultá y filtrá los productos registrados.'],
+    nuevo: ['Nuevo producto', 'Agregá un producto al catálogo.'],
+    movimientos: ['Movimientos', 'Registrá entradas, salidas y ajustes.'],
+    alertas: ['Alertas', 'Revisá los productos que necesitan reposición.'],
+    resumen: ['Resumen de stock', 'Consultá las cantidades agrupadas.'],
+    historial: ['Historial', 'Revisá los movimientos anteriores.']
+  };
+  const titulo = titulos[nombre];
+  document.title = titulo[0] + ' | StockVivero';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-panel]').forEach(panel => {
+    panel.hidden = panel.dataset.panel !== 'inicio';
+  });
+});
+</script>
 <script src="/app.js" defer></script>
 </body>
 </html>
