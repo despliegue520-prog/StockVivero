@@ -15,6 +15,28 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// Resumen de stock agrupado por unidad.
+// Esta ruta debe declararse antes de '/:id' para que "totales" no se interprete como un ID.
+router.get('/totales', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT
+         'General'::text AS categoria,
+         '-'::text AS subcategoria,
+         '-'::text AS marca,
+         unidad,
+         COALESCE(SUM(stock), 0) AS total_stock
+       FROM stock.stock_actual
+       WHERE activo = TRUE
+       GROUP BY unidad
+       ORDER BY unidad`
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Productos por debajo del stock mínimo
 router.get('/alertas/bajo-stock', async (req, res, next) => {
   try {
@@ -31,9 +53,14 @@ router.get('/alertas/bajo-stock', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: 'El id debe ser un entero positivo' });
+    }
+
     const { rows } = await pool.query(
       'SELECT * FROM stock.stock_actual WHERE id = $1',
-      [req.params.id]
+      [id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json(rows[0]);
