@@ -160,22 +160,43 @@ async function cargarDatos() {
   try {
     // Cargar los totales agrupados por categoría,
     // subcategoría, marca y unidad.
-    const totales = await api('/productos/totales');
-
     const tbodyTotales = $('totales');
 
-    if (tbodyTotales) {
-      tbodyTotales.replaceChildren();
+    // Esta ruta todavía no está implementada en el backend actual.
+    // Si no está disponible, mostramos un aviso pero seguimos cargando
+    // el catálogo y el historial para que el resto de la aplicación funcione.
+    try {
+      const totales = await api('/productos/totales');
 
-      totales.forEach((t) => {
-        tbodyTotales.appendChild(fila([
-          { texto: t.categoria || 'General' },
-          { texto: t.subcategoria || '-' },
-          { texto: t.marca || '-' },
-          { texto: t.unidad || '-' },
-          { texto: Number(t.total_stock ?? 0) }
-        ]));
-      });
+      if (tbodyTotales) {
+        tbodyTotales.replaceChildren();
+
+        if (Array.isArray(totales)) {
+          totales.forEach((t) => {
+            tbodyTotales.appendChild(fila([
+              { texto: t.categoria || 'General' },
+              { texto: t.subcategoria || '-' },
+              { texto: t.marca || '-' },
+              { texto: t.unidad || '-' },
+              { texto: Number(t.total_stock ?? 0) }
+            ]));
+          });
+        }
+      }
+    } catch (errorTotales) {
+      console.warn('El resumen de stock no está disponible:', errorTotales.message);
+
+      if (tbodyTotales) {
+        tbodyTotales.replaceChildren();
+
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.className = 'empty';
+        td.textContent = 'El resumen de stock necesita una ruta en el backend.';
+        tr.appendChild(td);
+        tbodyTotales.appendChild(tr);
+      }
     }
 
     // Cargar productos y actualizar el catálogo.
