@@ -1,0 +1,41 @@
+:root{--bosque:#183e2c;--naranja:#ef702b;--borde:#dde5da}body{line-height:1.55;-webkit-font-smoothing:antialiased}header{display:flex;align-items:center;gap:.75rem;padding:1rem max(1.2rem,calc((100vw - 1160px)/2));min-height:80px;box-shadow:0 3px 15px #153c2b0b}header strong{font-size:1.15rem;letter-spacing:-.03em}main{max-width:1160px;padding:1.6rem 1.2rem 4rem}main>nav{padding:.6rem 0 1.2rem;border-bottom:1px solid var(--borde);font-size:.85rem}main>nav a{text-decoration:none;padding:.35rem .5rem;border-radius:6px}main>nav a:hover{background:#e4eddf}h1{font-size:clamp(1.5rem,3.5vw,2.1rem);letter-spacing:-.04em;margin:1.4rem 0}h2{font-size:1.13rem;letter-spacing:-.02em;margin-top:0}h3{font-size:.9rem;color:#5b705f;margin-top:1.3rem}section{padding:1.5rem;border-color:var(--borde);box-shadow:0 3px 14px #193c2c03}.ficha-pestanas{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:.35rem;padding:.4rem;background:white;border:1px solid var(--borde);border-radius:12px;margin:1.2rem 0}.ficha-pestanas button{white-space:nowrap;background:transparent;border:0;color:#627865;font-size:.85rem;padding:.7rem 1rem;flex:1;font-weight:600}.ficha-pestanas button[aria-current]{background:var(--bosque);color:white;box-shadow:0 2px 5px #183e2c18}.ficha-pestanas button:hover{background:#e9f0e4}.ficha-pestanas button[aria-current]:hover{background:#24583e}.ficha-panel{animation:aparecer .18s ease-out}.resumen{gap:.8rem}.resumen>div{border:1px solid #dce6d6;background:#f5f8f0;flex:1;min-width:160px;border-radius:10px;padding:1rem 1.2rem;font-size:.8rem;color:#62765e}.resumen strong{color:var(--bosque);font-size:1.9rem;line-height:1.25;margin-top:.4rem;letter-spacing:-.03em}.nota-bajas{color:#8a592e;font-size:.82rem;border-top:1px solid var(--borde);padding-top:.8rem;margin-bottom:0}.mapa-cantero{border-top:3px solid var(--naranja)}.mapa-fila{padding:1rem 1.2rem;background:#fafbf7}.mapa-barra{height:40px;border-radius:8px}.mapa-encabezado a{font-size:1rem}.mapa-cifras{font-size:.8rem!important}.mapa-estado{font-size:.72rem}.mapa-referencias{background:#f7f9f4;font-size:.82rem}.tarjeta{padding:1.2rem;box-shadow:none}.tarjeta a{font-size:.95rem;text-decoration:none}.tarjeta p{font-size:.82rem}.estado.pendiente{display:block;background:#fffcf2;color:#7a6126}.estado.completa{background:#fff7f0}.estado.vacia{background:#fafcf7}form{gap:1rem}form label{font-size:.8rem;font-weight:550;gap:.45rem}input,select{background:white;color:var(--bosque);font:inherit;font-weight:400;min-height:43px;max-width:100%}input:focus,select:focus{outline:2px solid #9ab896;outline-offset:2px}button{min-height:42px;font-weight:600;transition:background .15s}button:hover{background:#193e2b}table{font-size:.82rem}th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;background:#f4f7f0;color:#64765e}td,th{padding:.85rem}tr:last-child td{border-bottom:0}.tabla{border:1px solid var(--borde);border-radius:9px}#mensaje:empty{display:none}#mensaje:not(:empty){padding:.75rem 1rem;background:#fff1e6;border-radius:8px;border-left:3px solid var(--naranja)}@keyframes aparecer{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.ficha-panel{animation:none}}@media(max-width:600px){main{padding:1rem .75rem 3rem}header{padding:1rem}section{padding:1rem}.ficha-pestanas{margin:.8rem 0}.ficha-pestanas button{flex:none;font-size:.8rem;padding:.65rem .8rem}.resumen>div{min-width:120px;padding:.8rem}.resumen strong{font-size:1.65rem}.mapa-fila{padding:.8rem}.mapa-barra{height:33px}main>nav{gap:.4rem;font-size:.78rem}.grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}[hidden]{display:none!important}
+
+/* Superficies alineadas con el planificador: verde claro y dorado, sin bloques blancos. */
+:root{--bosque:#142f29;--verde-plan:#214f42;--verde-claro:#edf3ee;--dorado-plan:#e6bc70;--borde-plan:#dce4dd}
+body{background:#f5f6f2;color:#233b32}
+header{background:linear-gradient(165deg,#142f29,#214f42);border-top:0}
+section,.tarjeta{background:var(--verde-claro);border-color:var(--borde-plan);box-shadow:0 8px 24px #142f2910}
+.tarjeta{border-left:4px solid var(--dorado-plan);border-radius:12px}
+.tarjeta.estado.pendiente,.tarjeta.estado.completa,.tarjeta.estado.vacia,.tarjeta.estado.parcial{background:var(--verde-claro);color:#233b32}
+.tarjeta a{color:#214f42;font-weight:750}
+.tarjeta .muted{color:#617068}
+.pendiente{background:#f5e8ca;color:#70551f}
+.ficha-pestanas{background:var(--verde-claro);border-color:var(--borde-plan)}
+.resumen>div{background:#e2eee3;border-color:#cbdcca}
+button{background:#28604e}
+input,select{background:#f8faf7;border-color:#cbd9cf}
+.tarjeta-invernadero{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1rem}
+.tarjeta-invernadero>a{flex:1 1 240px}
+.tarjeta-invernadero>p,.tarjeta-invernadero>.estado,.tarjeta-invernadero>.pendiente{flex-basis:100%;margin:.1rem 0}
+.boton-canteros{margin-left:auto;background:transparent;color:#214f42;border:1px solid #b8cdbb;min-height:38px;padding:.5rem .8rem}
+.boton-canteros:hover{background:#e2eee3;color:#142f29}
+.tarjeta-invernadero.abierto{border-color:#e6bc70;box-shadow:0 10px 25px #142f2918}
+.canteros-hijos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;flex-basis:100%;width:100%;padding:.8rem 0 0;border-top:1px solid #dce4dd}
+.canteros-hijos .tarjeta{margin:0;border-left:2px solid #e6bc70;background:#f5f8f3;box-shadow:none}
+.canteros-hijos .tarjeta label{display:flex;align-items:center;gap:.5rem;margin-top:.8rem;color:#617068;font-size:.78rem;font-weight:650}
+.canteros-hijos .tarjeta input[type=checkbox]{width:18px;height:18px;min-height:18px}
+.ficha-plantas{display:grid;gap:1rem}
+.ficha-plantas section{margin:0;padding:1.35rem 1.5rem;border:1px solid #dce4dd;border-radius:16px;background:#fff;box-shadow:0 8px 22px #142f2909}
+.ficha-plantas section h2{margin:0 0 .85rem;color:#142f29;font-size:1.12rem;letter-spacing:-.025em}
+.ficha-plantas section h3{margin:1.2rem 0 .65rem;color:#214f42;font-size:.9rem}
+.ficha-plantas section>p{color:#617068;font-size:.82rem;line-height:1.55}
+.ficha-plantas form{display:grid;grid-template-columns:minmax(220px,2fr) minmax(130px,1fr) minmax(130px,1fr) auto;align-items:end;gap:1rem;margin-top:1rem}
+.ficha-plantas form label{min-width:0;display:grid;gap:.45rem;color:#405746;font-size:.76rem;font-weight:750}
+.ficha-plantas form input,.ficha-plantas form select{width:100%;min-height:44px;border:1px solid #cbd9cf;border-radius:9px;background:#f8faf7;color:#233b32;padding:.7rem .8rem}
+.ficha-plantas form button{min-height:44px;white-space:nowrap;border:1px solid #285f4e;border-radius:9px;background:linear-gradient(135deg,#285f4e,#173f34);color:#fff;padding:.7rem 1rem;font-weight:750;cursor:pointer}
+.ficha-plantas form button:hover{background:#142f29}
+.ficha-pestanas{position:sticky;top:0;z-index:5;display:flex;gap:.35rem;margin:0 0 1rem;padding:.4rem;border:1px solid #dce4dd;border-radius:12px;background:#edf3ee;box-shadow:0 5px 15px #142f2914}
+.ficha-pestanas button{flex:1;min-height:40px;border:0;border-radius:8px;background:transparent;color:#617068;font-weight:750;cursor:pointer}
+.ficha-pestanas button[aria-current]{background:#214f42;color:#fff;box-shadow:0 3px 8px #142f2922}
+@media(max-width:800px){.ficha-plantas form{grid-template-columns:repeat(2,minmax(0,1fr))}.ficha-plantas form button{width:100%}}
+@media(max-width:520px){.ficha-plantas section{padding:1rem}.ficha-plantas form{grid-template-columns:1fr}.ficha-pestanas{position:static;overflow:auto}.ficha-pestanas button{flex:0 0 auto;padding:.6rem .8rem;font-size:.75rem}}

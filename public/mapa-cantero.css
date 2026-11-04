@@ -1,0 +1,33 @@
+.mapa-cantero{border:1px solid #dce4dd;border-top:0;border-radius:16px;background:#edf3ee;box-shadow:0 8px 24px #142f2910}
+.mapa-cantero>h2{padding:1.4rem 1.5rem .35rem;color:#142f29}
+.mapa-cantero>p{padding:0 1.5rem;color:#617068}
+.mapa-fila{padding:1.15rem;background:#f8faf7;border:1px solid #dce4dd;border-radius:13px;margin-top:1rem;box-shadow:0 4px 12px #142f2909}
+.mapa-encabezado{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap}.mapa-encabezado a{font-weight:750;text-decoration:none;color:#214f42}.mapa-estado{font-size:.74rem;background:#e2eee3;color:#28604e;padding:.3rem .65rem;border-radius:20px;font-weight:700}.mapa-fila p{font-size:.82rem;margin:.5rem 0;color:#617068}
+.mapa-barra{height:18px;border:0;background:#dce4dd;display:flex;overflow:hidden;border-radius:999px;box-shadow:inset 0 1px 2px #142f2915}.mapa-segmento{height:100%;display:block;flex-shrink:0;box-shadow:inset -1px 0 #ffffff66}.mapa-sin-relevar{border:1px dashed #c99a3d;background:repeating-linear-gradient(135deg,#f5e8ca 0,#f5e8ca 8px,#fffaf0 8px,#fffaf0 16px)}.mapa-cifras{font-weight:750;color:#28604e}.mapa-leyenda{display:flex;gap:.5rem .8rem;flex-wrap:wrap;margin-top:.75rem;font-size:.76rem}.mapa-leyenda>span{display:flex;align-items:center;gap:.35rem;padding:.25rem .5rem;border:1px solid #dce4dd;border-radius:999px;background:#fff;color:#617068}.mapa-leyenda i{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}.mapa-leyenda .mapa-libre{background:#dce4dd;border:1px solid #aebca6}@media(max-width:600px){.mapa-cantero>h2,.mapa-cantero>p{padding-left:1rem;padding-right:1rem}.mapa-fila{padding:.8rem}.mapa-barra{height:14px}.mapa-leyenda{font-size:.72rem}.mapa-cifras{line-height:1.7}}
+
+.mapa-referencias{padding:.8rem;border:1px solid #dce5db;border-radius:8px;margin:1rem 0}.mapa-referencias summary{cursor:pointer;font-weight:600}.mapa-leyenda i{border:1px solid #0002}
+
+.cantero-dibujo{margin:1.3rem 0 2rem}.cantero-dibujo>h3{font-size:1.05rem;color:#142f29}.cantero-terreno{border:1px solid #dce4dd;border-radius:14px;padding:1rem;background:#f5f6f2;box-shadow:none}.cantero-renglon{padding:.9rem;margin-bottom:.8rem;border:1px solid #dce4dd;background:#fff;border-radius:11px}.cantero-renglon:last-child{margin-bottom:0}.cantero-renglon>a{font-weight:750;color:#214f42;text-decoration:none}.cantero-renglon p{font-size:.78rem;margin:.4rem 0 .8rem}.cantero-macetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(27px,1fr));gap:6px;padding:.5rem 0}.cantero-maceta{position:relative;display:flex;align-items:center;justify-content:center;height:25px;max-width:30px;width:100%;box-sizing:border-box;border-radius:999px;font-size:.6rem;font-weight:750;isolation:isolate}.cantero-maceta.ocupada{background:var(--color-maceta);border:1px solid #0003;box-shadow:none;color:#142f29;text-shadow:0 0 3px white}.cantero-maceta.ocupada::before{content:none}.cantero-maceta.disponible{background:#edf3ee;border:2px dashed #36715b;color:#28604e;font-size:.9rem;box-shadow:none}.cantero-conteo{font-weight:700;color:#28604e}@media(max-width:600px){.cantero-terreno{padding:.55rem}.cantero-renglon{padding:.7rem}.cantero-macetas{grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:5px}.cantero-maceta{height:22px;max-width:25px}}
+
+/* Mapa visual de macetas: compacto, colorido y fácil de leer. */
+.cantero-dibujo{margin:1.5rem 0 1rem;padding:1.15rem;border:1px solid #d6e3d7;border-radius:16px;background:linear-gradient(145deg,#f8fbf7,#edf3ee)}
+.graficos-pestanas{display:flex;gap:.35rem;margin:1rem 0 0;padding:.35rem;border:1px solid #dce4dd;border-radius:11px;background:#e2eee3}
+.graficos-pestanas button{flex:1;min-height:40px;border:0;border-radius:8px;background:transparent;color:#617068;font-weight:750;cursor:pointer}
+.graficos-pestanas button[aria-current]{background:#214f42;color:#fff;box-shadow:0 3px 8px #142f2922}
+.grafico-panel[hidden]{display:none}
+.cantero-dibujo>h3{margin:.1rem 0 .35rem;font-size:1rem;color:#142f29}
+.cantero-dibujo>.muted{margin:0 0 1rem;font-size:.78rem;color:#617068}
+.cantero-terreno{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.7rem;border:0;border-radius:12px;padding:.75rem;background:#e2eee3;box-shadow:inset 0 1px 2px #142f2912}
+.cantero-renglon{position:relative;margin:0;padding:.85rem;border:1px solid #d7e3d8;border-radius:12px;background:#fff;box-shadow:0 3px 10px #142f2909}
+.cantero-renglon>a{display:inline-flex;align-items:center;min-width:2.5rem;height:1.6rem;padding:0 .55rem;border-radius:6px;background:#214f42;color:#fff;font-size:.72rem}
+.cantero-renglon p{margin:.45rem 0 .65rem;color:#617068;font-size:.76rem}
+.cantero-variedades{display:flex;flex-wrap:wrap;gap:.4rem;margin:.35rem 0 .55rem}
+.cantero-variedades>span{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .5rem;border:1px solid #dce4dd;border-radius:999px;background:#f8faf7;color:#617068;font-size:.7rem;font-weight:700}
+.cantero-variedades i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.cantero-conteo{font-weight:750!important;color:#28604e!important}
+.cantero-macetas{grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:.45rem;padding:.25rem 0}
+.cantero-maceta{height:21px;max-width:23px;border-radius:50% 50% 46% 46%;font-size:.55rem;box-shadow:0 2px 4px #142f291c!important;transition:transform .15s}
+.cantero-maceta:hover{transform:scale(1.16);z-index:2}
+.cantero-maceta.ocupada{border:2px solid #ffffffaa;color:#142f29;text-shadow:none;font-size:.48rem;letter-spacing:-.04em}
+.cantero-maceta.disponible{background:#f5f8f3;border:2px dashed #6d9b7a;color:#28604e;box-shadow:none!important}
+@media(max-width:650px){.cantero-terreno{grid-template-columns:1fr}}

@@ -1,0 +1,109 @@
+body.auth-locked > header,
+body.auth-locked > main { visibility: hidden; }
+
+.pantalla-acceso {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: minmax(280px, .9fr) minmax(360px, 1.1fr);
+  background: #f5f7f3;
+  color: #193c2c;
+}
+
+.acceso-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(2rem, 6vw, 5rem);
+  background: linear-gradient(145deg, #123b29, #1f6243);
+  color: #f1f7ef;
+}
+
+.acceso-visual::after {
+  position: absolute;
+  right: -8rem;
+  bottom: -9rem;
+  width: 26rem;
+  height: 26rem;
+  border: 1px solid #ffffff25;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rem #ffffff08, 0 0 0 6rem #ffffff05;
+  content: '';
+}
+
+.acceso-marca { position: relative; z-index: 1; display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; letter-spacing: -.04em; }
+.acceso-marca img { border-radius: 18px 5px 18px 5px; background: #fff; padding: .35rem; }
+.acceso-visual p { position: relative; z-index: 1; max-width: 18rem; margin: 0; color: #c6dcc8; font-size: 1.05rem; line-height: 1.6; }
+.acceso-resumen { position: relative; z-index: 1; width: min(100%, 25rem); padding: 1rem; border: 1px solid #ffffff22; border-radius: 18px; background: #ffffff0d; box-shadow: 0 18px 40px #071e1430; backdrop-filter: blur(8px); }
+.resumen-cabecera { display: flex; align-items: center; gap: .45rem; color: #d9e9da; font-size: .72rem; font-weight: 700; letter-spacing: .03em; }
+.resumen-punto { width: .45rem; height: .45rem; border-radius: 50%; background: #a9d68f; box-shadow: 0 0 0 4px #a9d68f1c; }
+.resumen-en-linea { margin-left: auto; color: #b9dca8; font-size: .65rem; font-weight: 600; }
+.resumen-metricas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-top: 1rem; }
+.resumen-metricas div { display: grid; gap: .15rem; padding-top: .7rem; border-top: 1px solid #ffffff1a; }
+.resumen-metricas strong { color: #fff; font-size: .7rem; font-weight: 700; }
+.resumen-metricas span { color: #a9c7ad; font-size: .64rem; }
+.acceso-orb { position: absolute; border-radius: 50%; background: #ff641f; opacity: .8; filter: blur(1px); }
+.acceso-orb-uno { top: 25%; left: -3rem; width: 7rem; height: 7rem; }
+.acceso-orb-dos { top: 12%; right: 10%; width: 1rem; height: 1rem; }
+.acceso-panel { position: relative; z-index: 0; display: flex; flex-direction: column; justify-content: center; width: min(100%, 520px); margin: auto; padding: 2.25rem clamp(1.5rem, 5vw, 5rem); }
+.acceso-panel::before { position: absolute; inset: 0 0 0 45%; z-index: -1; background: radial-gradient(circle at 70% 18%, #ffffff 0, #f8faf7 48%, #eef3ee 100%); content: ''; }
+.acceso-logo-movil { display: none; }
+.acceso-eyebrow { margin: 0 0 .9rem; color: #c55327; font-size: .7rem; font-weight: 800; letter-spacing: .16em; }
+.acceso-panel h1 { margin: 0; color: #193c2c; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.06em; line-height: 1.1; }
+.acceso-intro { max-width: 28rem; margin: 1rem 0 2rem; color: #6b7e70; }
+.form-acceso { display: grid; grid-template-columns: 1fr; gap: 1rem; padding: 1.35rem; border: 1px solid #e1e9df; border-radius: 18px; background: #ffffffd9; box-shadow: 0 18px 45px #193c2c12; }
+.form-acceso > label { min-width: 0; width: 100%; }
+.form-acceso label { display: grid; gap: .5rem; color: #193c2c; font-size: .82rem; font-weight: 650; }
+.form-acceso label > input { min-height: 3rem; border: 1px solid #d5dfd4; border-radius: 10px; background: #fff; color: #193c2c; padding: .85rem 1rem; outline: 0; transition: border-color .2s, box-shadow .2s, transform .2s; }
+.form-acceso label > input:hover { border-color: #a9c0aa; }
+.form-acceso label > input:focus { border-color: #28714b; box-shadow: 0 0 0 4px #28714b18; transform: translateY(-1px); }
+.campo-clave { display: flex; align-items: center; border: 1px solid #d5dfd4; border-radius: 10px; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.campo-clave:focus-within { border-color: #28714b; box-shadow: 0 0 0 4px #28714b18; }
+.campo-clave input { flex: 1 1 auto; min-width: 0; width: 0; border: 0; outline: 0; background: transparent; color: #193c2c; padding: .85rem 0 .85rem 1rem; }
+.ver-clave { flex: 0 0 auto; min-height: 42px; border: 0; background: transparent; color: #28714b; padding: .6rem .85rem; font-size: .75rem; font-weight: 700; cursor: pointer; }
+.error-acceso { min-height: 1.25rem; margin: 0; color: #b83f36; font-size: .8rem; }
+.boton-acceso { display: flex; align-items: center; justify-content: center; gap: .6rem; width: 100%; border: 0; border-radius: 10px; background: #24583e; color: #fff; padding: .9rem 1rem; font: inherit; font-weight: 700; cursor: pointer; transition: transform .2s, background .2s; }
+.boton-acceso:hover { background: #193f2c; transform: translateY(-1px); }
+.boton-acceso:disabled { cursor: wait; opacity: .75; }
+.spinner { width: 1rem; height: 1rem; border: 2px solid #ffffff66; border-top-color: #fff; border-radius: 50%; animation: girar .7s linear infinite; }
+.acceso-ayuda { display: flex; justify-content: center; gap: .35rem; margin: 1.3rem 0 0; color: #89978b; font-size: .75rem; text-align: center; }
+.acceso-ayuda span { color: #70a477; font-size: .65rem; }
+.header-actions { display: flex; align-items: center; gap: .75rem; }
+.boton-sesion { border: 1px solid #ffffff35; border-radius: 8px; background: transparent; color: #f2f7ef; padding: .5rem .75rem; font: inherit; font-size: .75rem; cursor: pointer; }
+.boton-sesion:hover { background: #ffffff12; }
+.modal-sesion[hidden] { display: none; }
+.modal-sesion { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 1rem; background: #10251bcc; backdrop-filter: blur(7px); animation: aparecer-modal .18s ease-out; }
+.modal-sesion-card { position: relative; width: min(100%, 430px); overflow: hidden; border: 1px solid #ffffff; border-radius: 22px; background: #fff; padding: 2.25rem; color: #193c2c; box-shadow: 0 24px 80px #10251c55; text-align: center; }
+.modal-sesion-card::before { position: absolute; inset: 0 0 auto; height: 5px; background: linear-gradient(90deg, #24583e, #f15a24); content: ''; }
+.modal-sesion-x { position: absolute; top: .8rem; right: .8rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: #f3f6f1; color: #6b7e70; font-size: 1.35rem; line-height: 1; cursor: pointer; }
+.modal-sesion-x:hover { background: #e7eee5; color: #193c2c; }
+.modal-sesion-icono { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: .25rem auto 1.25rem; border-radius: 17px; background: #fff0e8; color: #d24c1b; font-size: 1.8rem; font-weight: 700; transform: rotate(180deg); }
+.modal-sesion-eyebrow { margin: 0 0 .45rem; color: #c55327; font-size: .68rem; font-weight: 800; letter-spacing: .16em; }
+.modal-sesion-card h2 { margin: 0; color: #193c2c; font-size: 1.55rem; letter-spacing: -.04em; }
+.modal-sesion-card p:not(.modal-sesion-eyebrow) { margin: .75rem auto 1.6rem; max-width: 31rem; color: #718075; font-size: .88rem; line-height: 1.55; }
+.modal-sesion-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.modal-sesion-acciones button { min-height: 44px; border-radius: 10px; padding: .7rem 1rem; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.modal-sesion-cancelar { border: 1px solid #dce5db; background: #f7f9f6; color: #315640; }
+.modal-sesion-cancelar:hover { background: #edf3eb; }
+.modal-sesion-confirmar { border: 1px solid #d24c1b; background: #d24c1b; color: #fff; box-shadow: 0 5px 12px #d24c1b25; }
+.modal-sesion-confirmar:hover { background: #b83f16; border-color: #b83f16; }
+@keyframes aparecer-modal { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 480px) { .modal-sesion-card { padding: 2rem 1.25rem 1.35rem; } .modal-sesion-acciones { grid-template-columns: 1fr; } .modal-sesion-confirmar { grid-row: 1; } }
+@keyframes girar { to { transform: rotate(360deg); } }
+
+@media (max-width: 700px) {
+  .pantalla-acceso { display: block; overflow-y: auto; background: #f5f7f3; }
+  .acceso-visual { min-height: 31vh; padding: 1.5rem; }
+  .acceso-visual p { display: none; }
+  .acceso-resumen { display: none; }
+  .acceso-marca { font-size: 1.2rem; }
+  .acceso-marca img { width: 52px; height: 52px; }
+  .acceso-panel { width: 100%; padding: 2.1rem 1.25rem 2.5rem; }
+  .acceso-panel::before { display: none; }
+  .form-acceso { padding: 1.15rem; border-radius: 16px; box-shadow: 0 12px 28px #193c2c0d; }
+  .acceso-logo-movil { display: none; }
+  .header-actions .header-badge { display: none; }
+}

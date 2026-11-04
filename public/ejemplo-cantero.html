@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ficha de ejemplo · Los Aromos</title>
+  <link rel="stylesheet" href="/mapa-cantero.css?v=5">
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#193c2c;background:#f2f5f0}*{box-sizing:border-box}body{margin:0}header{background:#153c2b;color:white;border-top:4px solid #ff521d;padding:1rem}header a{color:white}main{max-width:1120px;margin:auto;padding:1.2rem}nav{display:flex;gap:1rem;flex-wrap:wrap}a{color:#24583e}h1{font-size:1.7rem}.barra{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin:1.2rem 0}button,input,select{font:inherit;padding:.7rem;border:1px solid #cddacb;border-radius:8px}button{background:#24583e;color:white;cursor:pointer}button:disabled{opacity:.5}input[type=checkbox]{accent-color:#24583e}label{display:grid;gap:.4rem}section,.tarjeta{background:white;border:1px solid #dce5db;border-radius:12px;padding:1.2rem;margin-bottom:1rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}.tarjeta{margin:0}.tarjeta a{display:block;font-weight:650;font-size:1.1rem;margin-bottom:.6rem}.pendiente{color:#956119;background:#fff3d8;padding:.3rem .6rem;border-radius:6px;display:inline-block;font-size:.85rem}.muted{color:#6b7e70}.etiqueta{background:white;border:1px solid #bbb;padding:5mm;break-inside:avoid;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2mm;color:#111}.etiqueta img{width:38mm;height:38mm}.etiqueta a{font-size:9px;overflow-wrap:anywhere;max-width:100%;color:#111}.etiqueta strong{font-size:15px}.etiqueta button{font-size:.8rem}#etiquetas{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:5mm;margin-top:1rem}form{display:flex;align-items:end;gap:1rem;flex-wrap:wrap}#mensaje{color:#a63b23}button:focus-visible,a:focus-visible{outline:3px solid #ff521d;outline-offset:3px}[hidden]{display:none!important}@media print{@page{size:A4;margin:10mm}body{background:white}header,.no-imprimir,main>nav,main>h1,#mensaje{display:none!important}main{padding:0;max-width:none}#etiquetas{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin:0}.etiqueta{min-width:0;padding:3mm}.etiqueta button{display:none}.etiqueta img{width:36mm;height:36mm}}
+  .resumen{display:flex;gap:1rem;flex-wrap:wrap}.resumen>div{background:#edf4e9;padding:1rem;border-radius:8px;min-width:140px}.resumen strong{display:block;font-size:1.5rem}.estado{border-left:5px solid #3a8654}.estado.completa{border-color:#e45a23}.estado.pendiente{border-color:#d2a132}.estado.vacia{border-color:#9cae9c}table{border-collapse:collapse;width:100%}td,th{padding:.7rem;text-align:left;border-bottom:1px solid #ddd}.tabla{overflow:auto}dialog{border:1px solid #b6c9b7;border-radius:12px;max-width:95vw;width:560px}dialog::backdrop{background:#0006}pre{white-space:pre-wrap;font:inherit}form label{min-width:160px;flex:1}form button{min-height:44px}.ancho{flex-basis:100%}textarea{font:inherit;max-width:100%}.fila-capacidad{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.6rem 0}.fila-capacidad input{width:160px}@media(max-width:600px){form{display:grid;width:100%}form label{min-width:0}input,select{width:100%}.resumen>div{flex:1;min-width:120px}}
+  </style>
+  <link rel="stylesheet" href="/interfaz-ubicaciones.css?v=3">
+</head>
+<body>
+  <header><strong>Los Aromos</strong> · Ubicaciones y etiquetas</header>
+  <main>
+    <nav><a href="/">Stock</a><a href="/invernaderos/">Invernaderos</a><a href="/etiquetas/">Etiquetas QR</a></nav>
+    <p id="mensaje" role="status" aria-live="polite"></p><div class="aviso-demo" style="background:#fff0df;border-left:4px solid #e76c26;padding:1rem;margin:1rem 0;border-radius:8px"><strong>DEMOSTRACIÓN · Datos ficticios</strong><p>Esta ficha muestra cómo se verá un cantero cargado. No consulta ni modifica tus existencias reales. Los formularios sirven para explorar el diseño; no guardan operaciones.</p></div><h1 id="titulo">INV01 - C01 · Cantero de ejemplo</h1>
+    <div class="no-imprimir" id="contenido"></div>
+    <div class="no-imprimir barra" id="acciones" hidden><button id="generar">Preparar etiquetas seleccionadas</button><button id="imprimir" disabled>Imprimir / guardar PDF</button></div>
+    <div id="etiquetas"></div>
+  </main>
+  <script src="/offline.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+  <script src="/formularios.js"></script>
+  <script src="/mapa-cantero.js?v=6"></script>
+  <script src="/plantas-ficha.js?v=6"></script>
+  <script src="/ejemplo-cantero.js"></script>
+</body>
+</html>

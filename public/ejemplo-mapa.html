@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejemplo de mapa · Los Aromos</title><link rel="stylesheet" href="/mapa-cantero.css">
+  <style>body{margin:0;background:#f2f5f0;color:#193c2c;font-family:system-ui,sans-serif;line-height:1.5}header{background:#153c2b;border-top:4px solid #ff521d;color:white;padding:1.2rem}header img{width:40px;height:40px;object-fit:contain;vertical-align:middle;margin-right:1rem}main{max-width:920px;margin:auto;padding:1rem}section{background:white;border:1px solid #dce5db;border-radius:12px;padding:1.2rem}h1{font-size:1.6rem}h2{font-size:1.2rem}a{color:#24583e}.muted{color:#6b7e70}.aviso{background:#fff0df;border-left:4px solid #e76c26;padding:1rem;border-radius:6px}.acciones{display:flex;gap:1rem;flex-wrap:wrap;margin:1.2rem 0}</style>
+</head>
+<body>
+  <header><img src="/logo.png" alt="">Los Aromos · Plantas</header>
+  <main>
+    <p class="aviso"><strong>Vista de ejemplo.</strong> Las capacidades, variedades y cantidades de esta pantalla son ficticias. No se guardan ni modifican tu stock.</p>
+    <h1>Así se verá la ocupación de un cantero</h1>
+    <p>Ejemplo: I01-C01 · Una planta por maceta.</p>
+    <div id="mapa"></div>
+    <div class="acciones"><a href="/invernaderos/">Ir a mis invernaderos</a><a href="/">Volver al stock</a></div>
+  </main>
+  <script src="/mapa-cantero.js"></script>
+  <script>
+    function el(tag,text='',className=''){const n=document.createElement(tag);n.textContent=text;n.className=className;return n;}
+    const filas=[
+      {id:1,codigo:'F01',ruta:'#mapa',configuracion:'Configuración A (ejemplo)',capacidad:100,ocupado:70},
+      {id:2,codigo:'F02',ruta:'#mapa',configuracion:'Configuración A (ejemplo)',capacidad:80,ocupado:80},
+      {id:3,codigo:'F03',ruta:'#mapa',configuracion:'Configuración B (ejemplo)',capacidad:60,ocupado:0},
+      {id:4,codigo:'F04',ruta:'#mapa',configuracion:null,capacidad:null,ocupado:0}
+    ];
+    const existencias=[
+      {fila_id:1,lote_id:1,variedad:'ARAUCO',lote:'Lote de ejemplo A',cantidad:40},
+      {fila_id:1,lote_id:2,variedad:'ARBEQUINA',lote:'Lote de ejemplo B',cantidad:30},
+      {fila_id:2,lote_id:1,variedad:'ARAUCO',lote:'Lote de ejemplo A',cantidad:80}
+    ];
+    document.getElementById('mapa').append(dibujarMapaCantero(filas,existencias));
+  </script>
+</body>
+</html>

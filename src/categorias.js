@@ -1,0 +1,16 @@
+module.exports = Object.freeze([
+  ['agroquimicos', 'Agroquímicos'],
+  ['macetas', 'Macetas'],
+  ['bandejas', 'Bandejas'],
+  ['fertilizantes', 'Fertilizantes'],
+  ['riego', 'Riego'],
+  ['electricidad', 'Electricidad'],
+  ['maquinaria', 'Maquinaria'],
+  ['mobiliario', 'Mobiliario'],
+  ['camioneta', 'Camioneta'],
+  ['camiones', 'Camiones'],
+  ['maquinaria-menor', 'Maquinaria menor'],
+  ['general', 'General'],
+  ['caldera', 'Caldera'],
+  ['herramientas', 'Herramientas'],
+].map(([slug, nombre]) => Object.freeze({ slug, nombre })));
