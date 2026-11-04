@@ -114,3 +114,75 @@ tbody tr:hover { background: #f8fbf7; }
 #f-prod>button{grid-column:1;align-self:start}
 @media(max-width:700px){#f-prod{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){#f-prod{grid-template-columns:1fr}}
+
+/* Ajustes responsive de la aplicación. */
+@media (max-width: 700px) {
+  body { overflow-x: hidden; }
+  header { gap: .75rem; }
+  .marca { min-width: 0; gap: .65rem; }
+  .marca > span { min-width: 0; }
+  .marca strong, .marca small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .header-actions { flex-shrink: 0; }
+  .boton-sesion { min-height: 38px; padding: .45rem .65rem; }
+
+  main { width: 100%; padding-inline: .8rem; }
+  .bienvenida { min-height: 0; padding: 1.35rem; gap: 1.25rem; }
+  .bienvenida > div { min-width: 0; }
+  .bienvenida h1 { font-size: clamp(1.7rem, 8vw, 2.2rem); }
+  .bienvenida .intro { max-width: 30rem; }
+  .bienvenida .secundario { width: 100%; }
+
+  .barra-ubicaciones { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .barra-ubicaciones a { min-height: 42px; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .barra-ubicaciones a:last-child { grid-column: 1 / -1; }
+
+  .pestanas { scrollbar-width: thin; }
+  .pestanas button { min-height: 40px; }
+  .contexto { align-items: stretch; gap: .65rem; }
+  .contexto label { width: 100%; min-width: 0; }
+  .contexto select { width: 100%; min-width: 0; }
+  .contexto span { padding: 0; }
+
+  .indicadores { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  .indicadores div { min-width: 0; padding: 1rem .75rem; }
+  .indicadores span { min-height: 2.1em; font-size: .66rem; line-height: 1.25; }
+  .indicadores strong { font-size: 1.65rem; }
+
+  section:not(.pantalla-acceso):not(.modal-sesion) { padding: 1.1rem; }
+  .filtros { align-items: stretch; }
+  .filtros > label:first-child { flex-basis: 100%; max-width: none; }
+  .filtros > label { min-width: 0; }
+  .tabla { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 680px; }
+  .subpestanas { width: 100%; overflow-x: auto; }
+  .subpestanas button { flex: 0 0 auto; }
+}
+
+@media (max-width: 480px) {
+  header { min-height: 70px; }
+  .marca-logo { width: 40px; height: 40px; }
+  .marca strong { font-size: 1rem; }
+  .marca small { font-size: .67rem; }
+  .boton-sesion { font-size: .7rem; }
+  main { padding-inline: .65rem; }
+  .bienvenida { padding: 1.1rem; border-radius: 16px; }
+  .bienvenida h1 { font-size: 1.7rem; }
+  .bienvenida .intro { font-size: .82rem; }
+  .barra-ubicaciones { grid-template-columns: 1fr !important; }
+  .barra-ubicaciones a:last-child { grid-column: auto; }
+  .pestanas { margin-inline: -.1rem; }
+  .pestanas button { padding-inline: .7rem; font-size: .75rem; }
+  .indicadores { grid-template-columns: 1fr; }
+  .indicadores div { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+  .indicadores span { min-height: 0; }
+  .indicadores strong { margin: 0; }
+  #f-prod { grid-template-columns: 1fr; }
+  #f-prod > button { grid-column: auto; width: 100%; }
+  .campos-categoria { padding: .8rem; }
+  .modal-sesion-acciones { grid-template-columns: 1fr; }
+  .modal-sesion-confirmar { grid-row: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
