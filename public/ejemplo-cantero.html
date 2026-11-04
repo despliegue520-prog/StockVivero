@@ -11,10 +11,18 @@
   <link rel="stylesheet" href="/interfaz-ubicaciones.css?v=3">
 </head>
 <body>
-  <header><strong>Los Aromos</strong> · Ubicaciones y etiquetas</header>
+  <header>
+    <div class="encabezado-interfaz">
+      <a class="marca-ubicaciones" href="/" aria-label="Los Aromos, volver al stock">
+        <img src="/logo.png" alt="" width="42" height="42">
+        <span><strong>Los Aromos</strong><small>Gestión de inventario</small></span>
+      </a>
+      <span class="encabezado-seccion">Ubicaciones y etiquetas</span>
+    </div>
+  </header>
   <main>
     <nav><a href="/">Stock</a><a href="/invernaderos/">Invernaderos</a><a href="/etiquetas/">Etiquetas QR</a></nav>
-    <p id="mensaje" role="status" aria-live="polite"></p><div class="aviso-demo" style="background:#fff0df;border-left:4px solid #e76c26;padding:1rem;margin:1rem 0;border-radius:8px"><strong>DEMOSTRACIÓN · Datos ficticios</strong><p>Esta ficha muestra cómo se verá un cantero cargado. No consulta ni modifica tus existencias reales. Los formularios sirven para explorar el diseño; no guardan operaciones.</p></div><h1 id="titulo">INV01 - C01 · Cantero de ejemplo</h1>
+    <p id="mensaje" role="status" aria-live="polite"></p><div class="aviso-demo"><strong>DEMOSTRACIÓN · Datos ficticios</strong><p>Esta ficha muestra cómo se verá un cantero cargado. No consulta ni modifica tus existencias reales. Los formularios sirven para explorar el diseño; no guardan operaciones.</p></div><h1 id="titulo">INV01 - C01 · Cantero de ejemplo</h1>
     <div class="no-imprimir" id="contenido"></div>
     <div class="no-imprimir barra" id="acciones" hidden><button id="generar">Preparar etiquetas seleccionadas</button><button id="imprimir" disabled>Imprimir / guardar PDF</button></div>
     <div id="etiquetas"></div>
