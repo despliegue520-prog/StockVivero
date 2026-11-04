@@ -1034,9 +1034,14 @@
       location.reload();
     });
 
-    iniciar().catch(err => {
-      mensaje(err.message, 'error');
-    });
+    if (authToken || apiKey) {
+      iniciar().catch(err => {
+        mensaje(err.message, 'error');
+      });
+    } else {
+      document.body.classList.add('auth-locked');
+      $('pantalla-acceso').hidden = false;
+    }
   </script>
 </body>
 </html>
