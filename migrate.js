@@ -15,10 +15,12 @@ async function runMigration() {
 
     const sqlPath = path.join(__dirname, 'sql', 'schema.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
+    const plantasSql = fs.readFileSync(path.join(__dirname, 'sql', 'plantas.sql'), 'utf8');
 
     console.log('Ejecutando schema.sql...');
     
     await client.query(sql);
+    await client.query(plantasSql);
 
     console.log('✅ Schema "stock" creado/actualizado correctamente.');
   } catch (error) {

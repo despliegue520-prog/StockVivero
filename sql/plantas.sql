@@ -43,6 +43,14 @@ CREATE TABLE IF NOT EXISTS stock.planta_alturas (
   fecha TIMESTAMPTZ NOT NULL,
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS stock.planta_tutorados (
+  fila_id INT NOT NULL REFERENCES stock.ubicaciones(id),
+  lote_id INT NOT NULL REFERENCES stock.planta_lotes(id),
+  cantidad INTEGER NOT NULL CHECK(cantidad >= 0),
+  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (fila_id, lote_id)
+);
+CREATE INDEX IF NOT EXISTS planta_tutorados_lote ON stock.planta_tutorados(lote_id);
 CREATE OR REPLACE VIEW stock.planta_saldos AS
 SELECT fila_id,lote_id,SUM(delta)::bigint AS cantidad FROM (
   SELECT destino_id AS fila_id,lote_id,cantidad AS delta FROM stock.planta_movimientos WHERE destino_id IS NOT NULL

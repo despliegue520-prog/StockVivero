@@ -4,6 +4,17 @@ const servicio=require('../services/plantas');
 router.use((req,res,next)=>{res.set('Cache-Control','no-store');next();});
 router.post('/movimientos',async(req,res,next)=>{try{res.status(201).json(await servicio.registrar(req.body));}catch(err){next(err);}});
 router.put('/canteros/:id/capacidades',async(req,res,next)=>{try{res.json(await servicio.capacidades(Number(req.params.id),req.body));}catch(err){next(err);}});
+router.put('/tutorados',async(req,res,next)=>{
+  try{
+    const fila=servicio.entero(req.body.fila_id,'Fila'),lote=servicio.entero(req.body.lote_id,'Lote'),cantidad=servicio.entero(req.body.cantidad,'Cantidad tutorada',true);
+    res.json(await servicio.transaccion(async db=>{
+      await db.query('SELECT id FROM stock.ubicaciones WHERE id=$1 FOR UPDATE',[fila]);
+      if(cantidad>await servicio.saldo(db,fila,lote))throw servicio.error('La cantidad tutorada no puede superar las existencias de la fila',409);
+      return (await db.query(`INSERT INTO stock.planta_tutorados(fila_id,lote_id,cantidad,actualizado_en) VALUES($1,$2,$3,now())
+        ON CONFLICT(fila_id,lote_id) DO UPDATE SET cantidad=EXCLUDED.cantidad,actualizado_en=now() RETURNING *`,[fila,lote,cantidad])).rows[0];
+    }));
+  }catch(err){next(err);}
+});
 router.get('/variedades',async(req,res,next)=>{
   try{
     const {rows}=await pool.query("SELECT DISTINCT variedad FROM stock.planta_lotes WHERE variedad IS NOT NULL AND btrim(variedad)<>'' ORDER BY variedad");
@@ -22,8 +33,9 @@ router.get('/detalle/:id',async(req,res,next)=>{
       LEFT JOIN (SELECT fila_id,SUM(cantidad) AS ocupado FROM stock.planta_saldos GROUP BY fila_id) s ON s.fila_id=a.id
       WHERE a.tipo='fila' ORDER BY a.ruta`,[id])).rows;
     const ids=filas.map(f=>f.id);
-    const existencias=(await pool.query(`SELECT s.*,l.variedad,l.lote,l.configuracion FROM stock.planta_saldos s
-      JOIN stock.planta_lotes l ON l.id=s.lote_id WHERE fila_id=ANY($1::int[]) AND cantidad>0 ORDER BY fila_id,l.variedad`,[ids])).rows;
+    const existencias=(await pool.query(`SELECT s.*,l.variedad,l.lote,l.configuracion,COALESCE(t.cantidad,0)::int AS tutoradas FROM stock.planta_saldos s
+      JOIN stock.planta_lotes l ON l.id=s.lote_id LEFT JOIN stock.planta_tutorados t ON t.fila_id=s.fila_id AND t.lote_id=s.lote_id
+      WHERE s.fila_id=ANY($1::int[]) AND s.cantidad>0 ORDER BY s.fila_id,l.variedad`,[ids])).rows;
     const movimientos=(await pool.query(`SELECT m.*,l.variedad,l.lote,l.configuracion,o.ruta AS origen,d.ruta AS destino FROM stock.planta_movimientos m
       JOIN stock.planta_lotes l ON l.id=m.lote_id LEFT JOIN stock.ubicaciones o ON o.id=m.origen_id LEFT JOIN stock.ubicaciones d ON d.id=m.destino_id
       WHERE origen_id=ANY($1::int[]) OR destino_id=ANY($1::int[]) ORDER BY creado_en DESC,id DESC LIMIT 100`,[ids])).rows;

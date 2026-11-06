@@ -35,6 +35,7 @@ async function montarFicha(actual, ubicaciones) {
     const card=el('article','','tarjeta estado '+estado);const a=el('a',codigo(f));a.href=f.ruta;card.append(a);
     card.append(el('p',f.configuracion||'Sin configuración'),el('p',f.capacidad===null?'Capacidad sin relevar':(f.portamacetas||0)+' portamacetas × '+(f.plantas_por_portamaceta||1)+' plantas = '+f.capacidad+' plantas · Ocupación: '+f.ocupado+' · Disponibles: '+(f.capacidad-f.ocupado)),el('strong',({pendiente:'Pendiente de relevamiento',vacia:'Vacía',completa:'Completa',parcial:'Parcialmente ocupada'})[estado]));
     datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>card.append(el('p',e.variedad+(e.lote?' · Lote '+e.lote:'')+': '+e.cantidad+' macetas')));
+    datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>card.append(el('p','Tutoradas: '+e.tutoradas+'/'+e.cantidad)));
     grid.append(card);
   });
   const detalleFilas=el('section');detalleFilas.append(el('h2','Detalle por fila'),el('p','Consultá la capacidad, las variedades y los lotes de cada ubicación.','muted'),grid);panel('Filas').append(detalleFilas);
@@ -43,7 +44,7 @@ async function montarFicha(actual, ubicaciones) {
     if(opciones.length)opciones.forEach(([v,t])=>input.add(new Option(t,v)));else input.type=tipo;
     label.append(input);form.append(label);return input;
   }
-  function seccion(titulo){const s=el('section');s.append(el('h2',titulo));const vista=titulo.startsWith('Relevar')?'Capacidades':titulo.startsWith('Registrar movimiento')?'Movimientos':titulo.includes('altura')||titulo.includes('Alturas')?'Alturas':'Historial';panel(vista).append(s);return s;}
+  function seccion(titulo){const s=el('section');s.append(el('h2',titulo));const vista=titulo.startsWith('Relevar')?'Capacidades':titulo.startsWith('Registrar movimiento')?'Movimientos':titulo.toLowerCase().includes('tutor')?'Tutorado':titulo.includes('altura')||titulo.includes('Alturas')?'Alturas':'Historial';panel(vista).append(s);return s;}
   function tabla(titulo,cabecera,filas){
     const s=seccion(titulo);if(!filas.length){s.append(el('p','Sin registros.'));return;}
     const wrap=el('div','','tabla'),table=el('table'),head=el('tr');cabecera.forEach(c=>head.append(el('th',c)));const thead=el('thead');thead.append(head);table.append(thead);
@@ -88,6 +89,14 @@ async function montarFicha(actual, ubicaciones) {
     };
   }
   if(['cantero','fila'].includes(actual.tipo)&&datos.filas.length){
+    const tutoradoSection=seccion('Registrar tutorado'),tutoradoForm=el('form');tutoradoSection.append(tutoradoForm);
+    tutoradoSection.append(el('p','Cargá cuántas macetas de cada variedad ya fueron tutoradas. La cantidad no puede superar las existencias actuales.','muted'));
+    const tutoradoRegistro=campo(tutoradoForm,'Fila y variedad','text',datos.existencias.map(e=>[e.fila_id+':'+e.lote_id,nombreFila(e.fila_id)+' · '+e.variedad+' · '+(e.lote||'Sin lote')+' · '+e.cantidad+' macetas']));
+    const tutoradoCantidad=campo(tutoradoForm,'Cantidad tutorada','number');tutoradoCantidad.min=0;tutoradoCantidad.step=1;tutoradoCantidad.required=true;
+    const actualizarTutorado=()=>{const e=datos.existencias.find(x=>x.fila_id+':'+x.lote_id===tutoradoRegistro.value);if(e){tutoradoCantidad.value=e.tutoradas;tutoradoCantidad.max=e.cantidad;}};
+    tutoradoRegistro.onchange=actualizarTutorado;actualizarTutorado();
+    const guardarTutorado=el('button','Revisar tutorado');tutoradoForm.append(guardarTutorado);
+    tutoradoForm.onsubmit=event=>{event.preventDefault();const [fila_id,lote_id]=tutoradoRegistro.value.split(':').map(Number);const e=datos.existencias.find(x=>x.fila_id===fila_id&&x.lote_id===lote_id);confirmar(nombreFila(fila_id)+' · '+e.variedad+'\nCantidad tutorada: '+tutoradoCantidad.value+' de '+e.cantidad+' macetas',()=>api('/api/plantas/tutorados',{method:'PUT',body:JSON.stringify({fila_id,lote_id,cantidad:Number(tutoradoCantidad.value)})}));};
     const section=seccion('Registrar movimiento'),form=el('form');section.append(form);
     section.append(el('p','Cantidades enteras en macetas. Escanear el QR nunca confirma una operación.'));
     section.append(el('p','El borrador se conserva en este navegador hasta confirmarlo o descartarlo. No es un movimiento registrado ni se sincroniza automáticamente. Para consultar datos y confirmar hace falta Internet.','muted'));
