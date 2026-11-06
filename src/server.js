@@ -19,6 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.static(publicDir));
+app.get('/favicon.ico', (req, res) => res.sendFile(path.join(publicDir, 'logo.png')));
 app.get(/^\/canteros\/(I[0-9]{2,3})-(C[0-9]{2,3})\/?$/, async (req,res,next) => {
   try {
     const ruta='/invernaderos/'+req.params[0]+'/canteros/'+req.params[1]+'/';

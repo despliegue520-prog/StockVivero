@@ -5,7 +5,7 @@ const categorias = require('../categorias');
 const { isIP } = require('node:net');
 
 function baseUrl() {
-  const raw = process.env.PUBLIC_BASE_URL;
+  const raw = process.env.PUBLIC_BASE_URL || 'https://stock.viverolosaromos.com.ar';
   if (!raw) throw Object.assign(new Error('Configurá PUBLIC_BASE_URL para generar QR'), { status: 503 });
   const url = new URL(raw);
   if (url.protocol !== 'https:' || isIP(url.hostname.replace(/^\[|\]$/g, '')) || url.hostname === 'localhost' || url.hostname.endsWith('.localhost') || url.hostname.endsWith('.local') || url.hostname.endsWith('.onrender.com') || url.pathname !== '/' || url.search || url.hash || url.username || url.password) {
