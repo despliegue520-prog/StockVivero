@@ -186,3 +186,208 @@ tbody tr:hover { background: #f8fbf7; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Evita que el viewport móvil quede corrido por un elemento ancho interno. */
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+header, main { min-width: 0; max-width: 100%; }
+main { margin-inline: auto; }
+@media (max-width: 700px) {
+  .pestanas { width: 100%; justify-content: flex-start; overflow-x: auto; overscroll-behavior-x: contain; }
+  .pestanas button { flex: 0 0 auto; }
+  .bienvenida, .barra-ubicaciones, .contexto, .indicadores, section { min-width: 0; max-width: 100%; }
+}
+
+/* Menú hamburguesa para la navegación secundaria en móvil. */
+.menu-toggle { display: none; place-items: center; gap: 4px; width: 42px; height: 42px; padding: .65rem; border: 1px solid #ffffff2b; border-radius: 10px; background: #ffffff0d; color: #fff; cursor: pointer; }
+.menu-toggle span { display: block; width: 18px; height: 2px; border-radius: 999px; background: currentColor; transition: transform .2s, opacity .2s; }
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+@media (max-width: 700px) {
+  header > .menu-toggle { display: grid; flex: 0 0 auto; }
+  main > .barra-ubicaciones { display: none !important; }
+  main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: .75rem; right: .75rem; z-index: 30; display: grid !important; gap: .25rem !important; padding: .55rem; border: 1px solid #dce4dd; border-radius: 14px; background: #fff; box-shadow: 0 16px 35px #142f2930; }
+  main > .barra-ubicaciones.menu-abierto a { display: flex; align-items: center; min-height: 42px; padding: .75rem .8rem; border-radius: 9px; color: #214f42; font-size: .84rem; font-weight: 700; }
+  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible { background: #edf3ee; }
+}
+
+/* Layout táctil para tablets y teléfonos. */
+@media (max-width: 1024px) {
+  main { padding-inline: 1rem; }
+  #f-prod, #f-mov { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #f-prod .campos-categoria { grid-column: 1 / -1; }
+  #f-prod > button, #f-mov > button { min-height: 46px; }
+  .contexto select { min-width: 0; }
+}
+
+@media (max-width: 600px) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+  header { padding-top: env(safe-area-inset-top); }
+  main { padding: 1rem .7rem calc(2.5rem + env(safe-area-inset-bottom)); }
+  #f-prod, #f-mov { grid-template-columns: 1fr; }
+  #f-prod .campos-categoria { grid-column: auto; }
+  #f-prod > button, #f-mov > button { grid-column: auto; width: 100%; }
+  form label, input, select, form button { min-height: 44px; }
+  .filtros input[type=search] { min-height: 46px; }
+  .tabla { margin-inline: -.1rem; border-radius: 9px; }
+  table { min-width: 620px; }
+  .subpestanas button { min-height: 44px; }
+
+  /* En teléfono, productos e historial se leen como tarjetas. */
+  .tabla table { display: block; width: 100%; min-width: 0; }
+  .tabla thead { display: none; }
+  #productos, #historial { display: block; width: 100%; }
+  #productos tr, #historial tr { display: block; width: calc(100% - 1.3rem); margin: .65rem; padding: .75rem; border: 1px solid #dce6dc; border-radius: 12px; background: #fff; box-shadow: 0 4px 12px #142f2910; }
+  #productos td, #historial td { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .5rem .15rem; border-bottom: 1px solid #edf1eb; white-space: normal; text-align: right; }
+  #productos td:last-child, #historial td:last-child { border-bottom: 0; }
+  #productos td::before, #historial td::before { flex: 0 0 auto; color: #708075; font-size: .68rem; font-weight: 750; text-align: left; text-transform: uppercase; letter-spacing: .04em; }
+  #productos td:nth-child(1)::before { content: 'Código'; }
+  #productos td:nth-child(2)::before { content: 'Nombre'; }
+  #productos td:nth-child(3)::before { content: 'Categoría'; }
+  #productos td:nth-child(4)::before { content: 'Unidad'; }
+  #productos td:nth-child(5)::before { content: 'Stock'; }
+  #productos td:nth-child(6)::before { content: 'Mínimo'; }
+  #historial td:nth-child(1)::before { content: 'Fecha'; }
+  #historial td:nth-child(2)::before { content: 'Producto'; }
+  #historial td:nth-child(3)::before { content: 'Tipo'; }
+  #historial td:nth-child(4)::before { content: 'Cantidad'; }
+  #historial td:nth-child(5)::before { content: 'Motivo'; }
+  #historial td:nth-child(6)::before { content: 'Tarea'; }
+  #productos .vacio, #historial .vacio { display: block; text-align: center; }
+  #productos .vacio::before, #historial .vacio::before { content: none; }
+  #productos td.vacio::before, #historial td.vacio::before { content: none !important; display: none !important; }
+
+  /* Selector de categoría contenido dentro del viewport móvil. */
+  .contexto > label { display: none; }
+  .selector-categoria-movil { position: relative; display: block; width: 100%; }
+  .selector-categoria-movil > button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 46px; padding: .7rem .8rem; border: 1px solid #cbd9cf; border-radius: 9px; background: #f8faf7; color: #233b32; font: inherit; font-size: .82rem; font-weight: 650; text-align: left; }
+  .selector-categoria-movil > button::after { content: '⌄'; color: #617068; font-size: 1.1rem; }
+  .selector-categoria-menu { position: absolute; top: calc(100% + .35rem); right: 0; left: 0; z-index: 40; display: grid; gap: .2rem; max-height: min(18rem, 55vh); overflow-y: auto; padding: .35rem; border: 1px solid #dce4dd; border-radius: 12px; background: #fff; box-shadow: 0 14px 30px #142f2930; }
+  .selector-categoria-menu[hidden] { display: none; }
+  .selector-categoria-menu button { min-height: 42px; padding: .65rem .7rem; border: 0; border-radius: 8px; background: transparent; color: #315142; font: inherit; font-size: .82rem; text-align: left; }
+.selector-categoria-menu button:hover, .selector-categoria-menu button.seleccionado { background: #edf3ee; color: #214f42; font-weight: 750; }
+}
+
+/* Pulido final del panel de escritorio. Mantiene la estructura y los hooks de la app. */
+@media (min-width: 701px) {
+  /* El selector desplegable y la grilla de categorías son vistas distintas. */
+  .selector-categoria-movil { display: none !important; }
+  .contexto #categorias { display: none !important; }
+
+  body {
+    background:
+      radial-gradient(circle at 7% 8%, #eaf3e8 0, transparent 24rem),
+      linear-gradient(180deg, #f7f9f5 0%, #f1f5f0 100%);
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    min-height: 76px;
+    padding-block: .8rem;
+  }
+
+  main {
+    padding-top: 2rem;
+    gap: 1.15rem;
+  }
+
+  .bienvenida {
+    min-height: 210px;
+    padding: 2.35rem 2.5rem;
+    align-items: center;
+    border-radius: 24px;
+  }
+
+  .bienvenida h1 { font-size: clamp(2.4rem, 4vw, 3.35rem); max-width: 38rem; }
+  .bienvenida .intro { font-size: .95rem; max-width: 37rem; }
+  .bienvenida .secundario { min-width: 132px; }
+
+  .barra-ubicaciones {
+    margin-top: -.35rem;
+    padding: .15rem;
+  }
+
+  .pestanas { margin-top: .25rem; }
+  .pestanas button { min-height: 48px; letter-spacing: .01em; }
+
+  .contexto {
+    display: flex;
+    align-items: center;
+    min-height: 74px;
+    padding: .9rem 1rem;
+    border: 1px solid #dce6dc;
+    border-radius: 14px;
+    background: #ffffffb8;
+  }
+
+  .contexto label { min-width: 285px; }
+  .contexto span { margin-left: auto; padding: 0 .5rem; font-weight: 600; }
+
+  .indicadores div { min-height: 116px; padding: 1.35rem 1.5rem; }
+  .indicadores strong { font-size: 2.55rem; }
+
+  section:not(.pantalla-acceso):not(.modal-sesion) { padding: 1.75rem; }
+  section h2 { margin-bottom: .55rem; }
+
+  .filtros { align-items: end; padding-bottom: 1.1rem; }
+  .filtros > label:first-child { max-width: 470px; }
+  .filtros > label { gap: .35rem; }
+
+  .tabla { box-shadow: 0 4px 14px #1d543008; }
+  th { height: 44px; }
+  td { height: 56px; }
+  tbody tr { transition: background .15s; }
+
+  .categorias { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; }
+  .categorias a { min-height: 84px; padding: 1rem 1.15rem; }
+}
+
+/* Si una versión antigua del marcado dejó la navegación dentro del filtro,
+   la ocultamos aquí y solo la mostramos en su panel propio. */
+#contexto > #categorias { display: none !important; }
+section[data-panel="categorias"] > #categorias { display: grid; }
+
+/* Evita que los enlaces de categorías hereden estilos de botones o selects. */
+.categorias a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.categorias a::after {
+  content: '\2197';
+  flex: 0 0 auto;
+  margin-left: .75rem;
+  color: #91a395;
+  font-size: 1rem;
+}
+
+.categorias a[aria-current]::after { color: #b88643; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bienvenida, .indicadores div, section:not(.pantalla-acceso):not(.modal-sesion) { animation: panel-in .45s ease both; }
+  .indicadores div:nth-child(2) { animation-delay: .05s; }
+  .indicadores div:nth-child(3) { animation-delay: .1s; }
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sistema visual compartido: menos ruido y más jerarquía. */
+body { font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+button, input, select { letter-spacing: -.01em; }
+button { box-shadow: 0 2px 5px #142f2912; }
+button:hover:not(:disabled) { box-shadow: 0 5px 12px #142f291c; }
+.secundario, .boton-sesion { box-shadow: none; }
+.barra-ubicaciones a { box-shadow: 0 2px 6px #214f420b; }
+.pestanas button { letter-spacing: -.005em; }
+.pestanas button:not([aria-current]):hover { color: var(--premium-forest); }
+.indicadores div { transition: transform .18s, box-shadow .18s; }
+.indicadores div:hover { box-shadow: 0 12px 26px #1d543018; transform: translateY(-2px); }
+section:not(.pantalla-acceso):not(.modal-sesion) { scroll-margin-top: 96px; }

@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS stock.planta_movimientos (
   ),
   CHECK(tipo<>'baja' OR length(trim(motivo))>0)
 );
+ALTER TABLE stock.planta_movimientos ADD COLUMN IF NOT EXISTS origen_detalle TEXT NOT NULL DEFAULT '';
+ALTER TABLE stock.planta_movimientos ADD COLUMN IF NOT EXISTS destino_detalle TEXT NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS planta_mov_origen ON stock.planta_movimientos(origen_id,lote_id);
 CREATE INDEX IF NOT EXISTS planta_mov_destino ON stock.planta_movimientos(destino_id,lote_id);
 CREATE TABLE IF NOT EXISTS stock.planta_alturas (

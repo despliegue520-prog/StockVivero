@@ -3,10 +3,12 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const QRCode = require('qrcode');
 
 const pool = require('./db');
 const productos = require('./routes/productos');
 const movimientos = require('./routes/movimientos');
+const tareas = require('./routes/tareas');
 const categorias = require('./categorias');
 const { buscarUsuario, validarPassword, crearToken, autenticar } = require('./auth');
 
@@ -20,6 +22,13 @@ app.use(express.json());
 
 app.use(express.static(publicDir));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(publicDir, 'logo.png')));
+app.get('/ejemplo-cantero-qr.svg', async (req, res, next) => {
+  try {
+    const base = process.env.PUBLIC_BASE_URL || 'https://stock.viverolosaromos.com.ar';
+    const destino = new URL('/ejemplo-cantero.html', base).toString();
+    res.type('image/svg+xml').send(await QRCode.toString(destino, { type: 'svg', margin: 1, errorCorrectionLevel: 'M' }));
+  } catch (err) { next(err); }
+});
 app.get(/^\/canteros\/(I[0-9]{2,3})-(C[0-9]{2,3})\/?$/, async (req,res,next) => {
   try {
     const ruta='/invernaderos/'+req.params[0]+'/canteros/'+req.params[1]+'/';
@@ -96,6 +105,7 @@ app.use('/api/ubicaciones', ubicaciones);
 app.use('/api/plantas', require('./routes/plantas'));
 app.use('/productos', productos);
 app.use('/movimientos', movimientos);
+app.use('/tareas', tareas);
 
 app.use((req, res) => {
   res.status(404).json({

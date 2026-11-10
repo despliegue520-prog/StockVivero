@@ -27,7 +27,10 @@ async function registrar(input, dbPool = pool) {
   if (typeof input.fecha !== 'string' || !Number.isFinite(Date.parse(input.fecha))) throw error('Fecha inválida');
   const motivo = input.motivo === undefined ? '' : input.motivo;
   if (typeof motivo !== 'string' || motivo.length > 1000 || (tipo === 'baja' && !motivo.trim())) throw error('La baja requiere motivo (hasta 1000 caracteres)');
-  const solicitud = { tipo,cantidad,origen_id:origen,destino_id:destino,fecha:new Date(input.fecha).toISOString(),motivo:motivo.trim() };
+  const origenDetalle = input.origen_detalle === undefined ? '' : input.origen_detalle;
+  const destinoDetalle = input.destino_detalle === undefined ? '' : input.destino_detalle;
+  if (typeof origenDetalle !== 'string' || origenDetalle.length > 150 || typeof destinoDetalle !== 'string' || destinoDetalle.length > 150) throw error('El origen y destino deben tener hasta 150 caracteres');
+  const solicitud = { tipo,cantidad,origen_id:origen,destino_id:destino,origen_detalle:origenDetalle.trim(),destino_detalle:destinoDetalle.trim(),fecha:new Date(input.fecha).toISOString(),motivo:motivo.trim() };
   if (tipo === 'ingreso') {
     solicitud.variedad = texto(input.variedad,'Planta o variedad');
     solicitud.configuracion = texto(input.configuracion,'Configuración de maceta');
@@ -57,8 +60,8 @@ async function registrar(input, dbPool = pool) {
       if (fila.configuracion !== lote.configuracion) throw error('La configuración de maceta no coincide con la del destino',409);
       if (await saldo(db,destino) + cantidad > fila.capacidad) throw error('La operación supera la capacidad disponible del destino',409);
     }
-    return (await db.query(`INSERT INTO stock.planta_movimientos(operacion,solicitud,tipo,lote_id,cantidad,origen_id,destino_id,fecha,motivo)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,[operacion,solicitud,tipo,lote.id,cantidad,origen,destino,solicitud.fecha,solicitud.motivo])).rows[0];
+    return (await db.query(`INSERT INTO stock.planta_movimientos(operacion,solicitud,tipo,lote_id,cantidad,origen_id,destino_id,origen_detalle,destino_detalle,fecha,motivo)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,[operacion,solicitud,tipo,lote.id,cantidad,origen,destino,solicitud.origen_detalle,solicitud.destino_detalle,solicitud.fecha,solicitud.motivo])).rows[0];
   },dbPool);
 }
 async function capacidades(cantero, input, dbPool = pool) {
@@ -68,9 +71,10 @@ async function capacidades(cantero, input, dbPool = pool) {
   const filas = input.filas.map(f=>{
     const numero = entero(f.numero,'Número de fila');
     if (numero>999 || numeros.has(numero)) throw error('Números de fila repetidos o fuera de rango'); numeros.add(numero);
-    const plantas_por_portamaceta=entero(f.plantas_por_portamaceta ?? 18,'Plantas por portamaceta');
-    const portamacetas=entero(f.portamacetas ?? f.capacidad,'Portamacetas',true);
-    const capacidad=portamacetas*plantas_por_portamaceta;
+    const plantas_por_fila=entero(f.plantas_por_fila ?? ((f.portamacetas ?? f.capacidad) * (f.plantas_por_portamaceta ?? 1)),'Plantas por fila',true);
+    const portamacetas=plantas_por_fila;
+    const plantas_por_portamaceta=1;
+    const capacidad=plantas_por_fila;
     if(!Number.isSafeInteger(capacidad)||capacidad>2147483647)throw error('La capacidad total supera el límite permitido');
     return {numero,capacidad,portamacetas,plantas_por_portamaceta,configuracion:texto(f.configuracion,'Configuración de portamaceta')};
   });

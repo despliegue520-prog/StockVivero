@@ -14,7 +14,7 @@ class Element {
 document = { body: new Element('body'), createElement: tag => new Element(tag), activeElement: null };
 const values = new Map();
 const context = {
-  window: {}, document,
+  window: { stockApiUrl: path => path, stockApiCredentials: 'same-origin' }, document,
   sessionStorage: { setItem: (k,v) => values.set(k,v) },
   fetch: async (url, options) => ({ status: options.headers['x-api-key'] === 'test-valid' ? 200 : 401, ok: options.headers['x-api-key'] === 'test-valid' })
 };

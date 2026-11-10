@@ -14,13 +14,16 @@ const filas = [
 const datos = {
   ubicacion: actual, filas, bajas: 5,
   existencias: [
-    { fila_id: 1001, lote_id: 101, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', configuracion: filas[0].configuracion, cantidad: 40 },
-    { fila_id: 1001, lote_id: 102, variedad: 'ARBEQUINA', lote: 'AQ-EJEMPLO', configuracion: filas[0].configuracion, cantidad: 30 },
-    { fila_id: 1002, lote_id: 101, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', configuracion: filas[1].configuracion, cantidad: 80 }
+    { fila_id: 1001, lote_id: 101, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', configuracion: filas[0].configuracion, cantidad: 40, tutoradas: 28 },
+    { fila_id: 1001, lote_id: 102, variedad: 'ARBEQUINA', lote: 'AQ-EJEMPLO', configuracion: filas[0].configuracion, cantidad: 30, tutoradas: 12 },
+    { fila_id: 1002, lote_id: 101, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', configuracion: filas[1].configuracion, cantidad: 80, tutoradas: 65 }
   ],
   alturas: [
     { fila_id: 1001, lote_id: 101, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', altura: 25, unidad: 'cm', fecha: '2026-10-30T12:00:00-03:00' },
     { fila_id: 1001, lote_id: 102, variedad: 'ARBEQUINA', lote: 'AQ-EJEMPLO', altura: 18, unidad: 'cm', fecha: '2026-10-30T12:00:00-03:00' }
+  ],
+  bajasDetalle: [
+    { fecha: '2026-10-30T11:00:00-03:00', origen: filas[0].codigoVisible, variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', cantidad: 5, motivo: 'Plantas daÃ±adas (ejemplo)' }
   ],
   movimientos: [
     { tipo: 'baja', variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', cantidad: 5, origen: filas[0].codigoVisible, destino: null, motivo: 'Plantas dañadas (ejemplo)', fecha: '2026-10-30T11:00:00-03:00' },

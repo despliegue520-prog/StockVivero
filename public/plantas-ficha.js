@@ -6,36 +6,40 @@ async function montarFicha(actual, ubicaciones) {
   contenedor.className='ficha-plantas';
   const navegacion=el('nav','','ficha-pestanas');navegacion.setAttribute('aria-label','Vistas de la ubicación');contenedor.append(navegacion);
   const paneles=new Map();
-  const panel=(nombre)=>{if(!paneles.has(nombre)){const n=el('div','','ficha-panel');n.hidden=nombre!=='Resumen y mapa';paneles.set(nombre,n);contenedor.append(n);}return paneles.get(nombre);};
+  const panel=(nombre)=>{if(!paneles.has(nombre)){const n=el('div','','ficha-panel');n.hidden=nombre!=='Resumen';paneles.set(nombre,n);contenedor.append(n);}return paneles.get(nombre);};
   const nombreFila = id => {
     const fila=ubicaciones.find(u=>u.id===Number(id)); return fila ? codigo(fila) : String(id);
   };
   const grupos = new Map();
   datos.filas.forEach(f=>{
     const key=f.configuracion || 'Sin configuración';
-    if(!grupos.has(key))grupos.set(key,{filas:0,pendientes:0,capacidad:0,ocupado:0,portamacetas:0,plantasPorPortamaceta:null});
+    if(!grupos.has(key))grupos.set(key,{filas:0,pendientes:0,capacidad:0,ocupado:0,tutoradas:0,portamacetas:0,plantasPorPortamaceta:null});
     const g=grupos.get(key);g.filas++;g.ocupado+=f.ocupado;g.portamacetas+=Number(f.portamacetas)||0;g.plantasPorPortamaceta=g.plantasPorPortamaceta||f.plantas_por_portamaceta||null;
     if(f.capacidad===null)g.pendientes++;else g.capacidad+=f.capacidad;
+    datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>{g.tutoradas+=Number(e.tutoradas)||0;});
   });
   const resumen=el('section');resumen.append(el('h2','Capacidad y ocupación'));
-  resumen.append(el('p',datos.filas.length+' filas · 1 maceta = 1 planta. Capacidades y disponibilidad separadas por configuración.'));
+  resumen.append(el('p',datos.filas.length+' filas registradas.'));
   if(!grupos.size)resumen.append(el('span','Capacidad sin relevar','pendiente'));
   for(const [config,g] of grupos){
     resumen.append(el('h3',config));const cards=el('div','','resumen');
     for(const [titulo,valor] of [['Portamacetas',g.portamacetas||'Sin relevar'],['Plantas por portamaceta',g.plantasPorPortamaceta||'Sin relevar'],['Capacidad total',g.pendientes?'Sin relevar ('+g.capacidad+' relevadas)':g.capacidad],['Ocupación',g.ocupado],['Disponibles',g.pendientes?'Sin relevar':g.capacidad-g.ocupado]]){
       const card=el('div',titulo);card.append(el('strong',String(valor)));cards.append(card);
-    }resumen.append(cards);
+    }const primero=cards.firstElementChild;if(primero){primero.firstChild.textContent='Plantas por fila';primero.querySelector('strong').textContent=String(g.capacidad||'Sin relevar');}cards.children[1]?.remove();const tutoradas=el('div','Plantas tutoradas');tutoradas.append(el('strong',String(g.tutoradas)));cards.append(tutoradas);resumen.append(cards);
     if(g.pendientes)resumen.append(el('p',g.pendientes+' filas pendientes. El subtotal relevado no representa la capacidad total.'));
   }
-  resumen.append(el('p','Bajas acumuladas: '+datos.bajas+' macetas. Ya están descontadas del stock actual.','nota-bajas'));panel('Resumen y mapa').append(resumen);
-  if (actual.tipo === 'cantero' || actual.tipo === 'fila') panel('Resumen y mapa').append(dibujarMapaCantero(datos.filas, datos.existencias));
+  resumen.append(el('p','Bajas acumuladas: '+datos.bajas+' macetas. Ya están descontadas del stock actual.','nota-bajas'));panel('Resumen').append(resumen);
+
+  const variedadesPorFila=el('div','','resumen-variedades');variedadesPorFila.append(el('h3','Variedad por fila'));
+  datos.filas.forEach(f=>{const variedades=[...new Set(datos.existencias.filter(e=>e.fila_id===f.id).map(e=>e.variedad))];variedadesPorFila.append(el('p',codigo(f)+': '+(variedades.length?variedades.join(', '):'Sin plantas')));});
+  resumen.append(variedadesPorFila);
   const grid=el('div','','grid');
   datos.filas.forEach(f=>{
     const estado=f.capacidad===null?'pendiente':f.ocupado===0?'vacia':f.ocupado===f.capacidad?'completa':'parcial';
     const card=el('article','','tarjeta estado '+estado);const a=el('a',codigo(f));a.href=f.ruta;card.append(a);
     card.append(el('p',f.configuracion||'Sin configuración'),el('p',f.capacidad===null?'Capacidad sin relevar':(f.portamacetas||0)+' portamacetas × '+(f.plantas_por_portamaceta||1)+' plantas = '+f.capacidad+' plantas · Ocupación: '+f.ocupado+' · Disponibles: '+(f.capacidad-f.ocupado)),el('strong',({pendiente:'Pendiente de relevamiento',vacia:'Vacía',completa:'Completa',parcial:'Parcialmente ocupada'})[estado]));
     datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>card.append(el('p',e.variedad+(e.lote?' · Lote '+e.lote:'')+': '+e.cantidad+' macetas')));
-    datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>card.append(el('p','Tutoradas: '+e.tutoradas+'/'+e.cantidad)));
+    datos.existencias.filter(e=>e.fila_id===f.id).forEach(e=>card.append(el('p','Plantas tutoradas: '+e.tutoradas+'/'+e.cantidad)));
     grid.append(card);
   });
   const detalleFilas=el('section');detalleFilas.append(el('h2','Detalle por fila'),el('p','Consultá la capacidad, las variedades y los lotes de cada ubicación.','muted'),grid);panel('Filas').append(detalleFilas);
@@ -64,10 +68,8 @@ async function montarFicha(actual, ubicaciones) {
     const cantidad=campo(form,'Cantidad de filas','number');cantidad.min=1;cantidad.max=999;cantidad.value=datos.filas.length||'';cantidad.required=true;
     const modo=campo(form,'Capacidades','text',[['igual','Igual para todas'],['individual','Por fila']]);
     const config=campo(form,'Tipo de portamaceta (nombre o código)');config.required=true;config.maxLength=150;
-    const comun=campo(form,'Portamacetas por fila','number');comun.min=0;comun.required=true;
-    const plantas=campo(form,'Plantas por portamaceta','number');plantas.min=1;plantas.required=true;plantas.value=18;
-    const primeraFilaConFormato=datos.filas.find(f=>f.plantas_por_portamaceta);
-    if(primeraFilaConFormato)plantas.value=primeraFilaConFormato.plantas_por_portamaceta;
+    const comun=campo(form,'Plantas por fila','number');comun.min=0;comun.required=true;
+    const plantas=campo(form,'Plantas por portamaceta','number');plantas.min=1;plantas.required=true;plantas.value=1;plantas.parentElement.hidden=true;
     const individuales=el('div','','ancho');form.append(individuales);
     const editar=()=>{
       individuales.replaceChildren();comun.parentElement.hidden=modo.value!=='igual';comun.required=modo.value==='igual';
@@ -76,7 +78,7 @@ async function montarFicha(actual, ubicaciones) {
         for(let i=1;i<=n;i++){
           const previa=datos.filas.find(f=>f.codigo==='F'+String(i).padStart(2,'0'));
           const div=el('div','','fila-capacidad');div.append(el('span','Fila '+i));
-          const c=campo(div,'Portamacetas','number');c.min=0;c.required=true;c.dataset.numero=i;if(previa?.portamacetas!==null&&previa?.portamacetas!==undefined)c.value=previa.portamacetas;else if(previa)c.value=previa.capacidad;
+          const c=campo(div,'Plantas por fila','number');c.min=0;c.required=true;c.dataset.numero=i;if(previa)c.value=previa.capacidad;
           const cfg=campo(div,'Configuración');cfg.required=true;cfg.maxLength=150;cfg.dataset.config=i;cfg.value=previa?.configuracion||config.value;
           individuales.append(div);
         }
@@ -90,9 +92,9 @@ async function montarFicha(actual, ubicaciones) {
   }
   if(['cantero','fila'].includes(actual.tipo)&&datos.filas.length){
     const tutoradoSection=seccion('Registrar tutorado'),tutoradoForm=el('form');tutoradoSection.append(tutoradoForm);
-    tutoradoSection.append(el('p','Cargá cuántas macetas de cada variedad ya fueron tutoradas. La cantidad no puede superar las existencias actuales.','muted'));
+    tutoradoSection.append(el('p','Cargá cuántas plantas de cada variedad ya fueron tutoradas. La cantidad no puede superar las existencias actuales.','muted'));
     const tutoradoRegistro=campo(tutoradoForm,'Fila y variedad','text',datos.existencias.map(e=>[e.fila_id+':'+e.lote_id,nombreFila(e.fila_id)+' · '+e.variedad+' · '+(e.lote||'Sin lote')+' · '+e.cantidad+' macetas']));
-    const tutoradoCantidad=campo(tutoradoForm,'Cantidad tutorada','number');tutoradoCantidad.min=0;tutoradoCantidad.step=1;tutoradoCantidad.required=true;
+    const tutoradoCantidad=campo(tutoradoForm,'Cantidad de plantas tutoradas','number');tutoradoCantidad.min=0;tutoradoCantidad.step=1;tutoradoCantidad.required=true;
     const actualizarTutorado=()=>{const e=datos.existencias.find(x=>x.fila_id+':'+x.lote_id===tutoradoRegistro.value);if(e){tutoradoCantidad.value=e.tutoradas;tutoradoCantidad.max=e.cantidad;}};
     tutoradoRegistro.onchange=actualizarTutorado;actualizarTutorado();
     const guardarTutorado=el('button','Revisar tutorado');tutoradoForm.append(guardarTutorado);
@@ -113,7 +115,12 @@ async function montarFicha(actual, ubicaciones) {
     const loteExistente=campo(form,'Lote disponible','text',[['','Seleccioná un lote']]);
     const cantidad=campo(form,'Cantidad de macetas','number');cantidad.min=1;cantidad.step=1;cantidad.required=true;
     const fecha=campo(form,'Fecha y hora','datetime-local');fecha.required=true;fecha.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
-    const motivo=campo(form,'Motivo');motivo.maxLength=1000;
+    const razonesBaja=[['','Seleccioná una razón'],['Planta muerta','Planta muerta'],['Planta dañada','Planta dañada'],['Planta enferma','Planta enferma'],['Descartada por calidad','Descartada por calidad'],['Pérdida o faltante','Pérdida o faltante'],['Otra','Otra']];
+    const razonBaja=campo(form,'Razón de baja','text',razonesBaja);
+    const motivo=campo(form,'Detalle adicional');motivo.maxLength=1000;
+    const destinosPlantas=[['','Seleccioná una ubicación'],...Array.from({length:16},(_,i)=>['Invernadero '+(i+1),'Invernadero '+(i+1)]),...['1A','1B','1C','2A','2B','2C','2D','2E','2F'].map(c=>['Rusticadero '+c,'Rusticadero '+c])];
+    const origenDetalle=campo(form,'De dónde vienen','text',destinosPlantas);
+    const destinoDetalle=campo(form,'A dónde las llevan','text',destinosPlantas);
     // También permite traslados entre filas del mismo cantero.
     const destino=campo(form,'Fila de destino','text',[['','Seleccioná el destino'],...ubicaciones.filter(u=>u.tipo==='fila').map(f=>[f.id,codigo(f)])]);
     const desdeQR=campo(form,'Enlace del QR de destino (opcional)');desdeQR.placeholder='https://stock.viverolosaromos.com.ar/canteros/I01-C01/';
@@ -140,12 +147,15 @@ async function montarFicha(actual, ubicaciones) {
       [variedad,configuracion,lote].forEach(e=>{e.parentElement.hidden=!ingreso;e.required=ingreso&&e!==lote;});
       loteExistente.parentElement.hidden=ingreso;loteExistente.required=!ingreso;
       [destino,desdeQR].forEach(e=>e.parentElement.hidden=!traslado);aplicar.hidden=!traslado;escanear.hidden=!traslado;destino.required=traslado;
-      motivo.required=tipo.value==='baja';
+      razonBaja.parentElement.hidden=tipo.value!=='baja';razonBaja.required=tipo.value==='baja';
+      motivo.required=false;
+      origenDetalle.parentElement.hidden=!ingreso;
+      destinoDetalle.parentElement.hidden=ingreso||traslado;
       loteExistente.replaceChildren(new Option('Seleccioná un lote',''));
       datos.existencias.filter(e=>e.fila_id===Number(fila.value)).forEach(e=>loteExistente.add(new Option(e.variedad+' · '+(e.lote||'Sin lote')+' · '+e.cantidad+' disponibles',e.lote_id)));
       configuracion.value=datos.filas.find(f=>f.id===Number(fila.value))?.configuracion||'';
     }tipo.onchange=cambiar;fila.onchange=cambiar;cambiar();
-    const campos={tipo,fila,variedad,lote,configuracion,loteExistente,cantidad,fecha,motivo,destino};
+    const campos={tipo,fila,variedad,lote,configuracion,loteExistente,cantidad,fecha,razonBaja,motivo,origenDetalle,destinoDetalle,destino};
     let operacion=crypto.randomUUID();
     const guardarBorrador=()=>{
       const valores=Object.fromEntries(Object.entries(campos).map(([k,e])=>[k,e.value]));
@@ -172,7 +182,8 @@ async function montarFicha(actual, ubicaciones) {
     const borrar=el('button','Descartar borrador');borrar.type='button';borrar.onclick=()=>{localStorage.removeItem(borradorKey);form.reset();cambiar();operacion=crypto.randomUUID();};form.append(borrar);
     const enviar=el('button','Revisar movimiento');form.append(enviar);
     form.onsubmit=event=>{
-      event.preventDefault();guardarBorrador();const ingreso=tipo.value==='ingreso';const payload={operacion,tipo:tipo.value,cantidad:Number(cantidad.value),fecha:new Date(fecha.value).toISOString(),motivo:motivo.value};
+      event.preventDefault();guardarBorrador();const ingreso=tipo.value==='ingreso';const payload={operacion,tipo:tipo.value,cantidad:Number(cantidad.value),fecha:new Date(fecha.value).toISOString(),motivo:tipo.value==='baja'?[razonBaja.value,motivo.value].filter(Boolean).join(' · '):motivo.value,origen_detalle:origenDetalle.value,destino_detalle:destinoDetalle.value};
+      if(tipo.value==='baja')motivo.value=payload.motivo;
       if(ingreso)Object.assign(payload,{destino_id:Number(fila.value),variedad:variedad.value,lote:lote.value,configuracion:configuracion.value});
       else Object.assign(payload,{origen_id:Number(fila.value),lote_id:Number(loteExistente.value)});
       if(tipo.value==='traslado')payload.destino_id=Number(destino.value);
@@ -193,7 +204,7 @@ async function montarFicha(actual, ubicaciones) {
   tabla('Bajas registradas',['Fecha','Fila','Planta / lote','Cantidad','Motivo'],(datos.bajasDetalle||[]).map(b=>[new Date(b.fecha).toLocaleString('es-AR'),b.origen||'—',b.variedad+' / '+(b.lote||'Sin lote'),b.cantidad+' macetas',b.motivo||'—']));
   const botones=[];
   for(const [nombre,nodo] of paneles){
-    const boton=el('button',nombre);boton.type='button';if(nombre==='Resumen y mapa')boton.setAttribute('aria-current','page');
+    const boton=el('button',nombre);boton.type='button';if(nombre==='Resumen')boton.setAttribute('aria-current','page');
     boton.onclick=()=>{for(const [titulo,p] of paneles)p.hidden=titulo!==nombre;botones.forEach(b=>{if(b===boton)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});};
     botones.push(boton);navegacion.append(boton);
   }

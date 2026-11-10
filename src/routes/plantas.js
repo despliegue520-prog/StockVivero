@@ -36,7 +36,7 @@ router.get('/detalle/:id',async(req,res,next)=>{
     const existencias=(await pool.query(`SELECT s.*,l.variedad,l.lote,l.configuracion,COALESCE(t.cantidad,0)::int AS tutoradas FROM stock.planta_saldos s
       JOIN stock.planta_lotes l ON l.id=s.lote_id LEFT JOIN stock.planta_tutorados t ON t.fila_id=s.fila_id AND t.lote_id=s.lote_id
       WHERE s.fila_id=ANY($1::int[]) AND s.cantidad>0 ORDER BY s.fila_id,l.variedad`,[ids])).rows;
-    const movimientos=(await pool.query(`SELECT m.*,l.variedad,l.lote,l.configuracion,o.ruta AS origen,d.ruta AS destino FROM stock.planta_movimientos m
+    const movimientos=(await pool.query(`SELECT m.*,l.variedad,l.lote,l.configuracion,COALESCE(o.ruta,m.origen_detalle) AS origen,COALESCE(d.ruta,m.destino_detalle) AS destino FROM stock.planta_movimientos m
       JOIN stock.planta_lotes l ON l.id=m.lote_id LEFT JOIN stock.ubicaciones o ON o.id=m.origen_id LEFT JOIN stock.ubicaciones d ON d.id=m.destino_id
       WHERE origen_id=ANY($1::int[]) OR destino_id=ANY($1::int[]) ORDER BY creado_en DESC,id DESC LIMIT 100`,[ids])).rows;
     const bajas=(await pool.query("SELECT COALESCE(SUM(cantidad),0) AS cantidad FROM stock.planta_movimientos WHERE tipo='baja' AND origen_id=ANY($1::int[])",[ids])).rows[0].cantidad;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/png" href="/logo.png?v=2">
   <link rel="stylesheet" href="/login.css">
   <link rel="stylesheet" href="/premium.css?v=5">
   <title>Stock · Los Aromos</title>
@@ -278,7 +278,7 @@
     form button[type=submit]:hover { background:#193f2c; }
     @media(prefers-color-scheme:dark) { :root { --bg:#101e16; --card:#192c20; --txt:#e5f0e4; --mut:#a2b9a5; --ac:#8bc69a; --bd:#304c38; --ok:#8bcea2; --bad:#ff9b91; } header { background:#102e20; } .eyebrow { color:#ff9b65; } .indicadores strong { color:#e5f0e4; } .pestanas button[aria-current] { background:#2d6343; color:#fff; } .categorias a:hover,.categorias a[aria-current] { background:#26442e; border-color:#577c59; color:#dcf0d8; } .header-badge { color:#ffd1b7; background:#ffffff0b; border-color:#ffffff20; } .subpestanas { background:#29402e; } }
   .campos-categoria { grid-column:1 / -1; border:1px solid var(--bd); border-radius:10px; padding:1rem; min-width:0; } .campos-categoria legend { color:var(--mut); font-size:.85rem; padding:0 .5rem; } #campos-especificos { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; } </style>
-  <link rel="stylesheet" href="/premium.css?v=8">
+  <link rel="stylesheet" href="/premium.css?v=14">
 </head>
 
 <body class="auth-locked">
@@ -329,18 +329,20 @@
   </section>
   <header>
     <a class="marca" href="/" aria-label="Los Aromos, inicio"><img class="marca-logo" src="/logo.png" alt="" width="48" height="48"><span><strong>Los Aromos</strong><small>Gestión de inventario</small></span></a><div class="header-actions"><span class="header-badge">Control de stock</span><button id="cerrar-sesion" class="boton-sesion" type="button">Cerrar sesión</button></div>
+    <button id="menu-toggle-stock" class="menu-toggle" type="button" aria-expanded="false" aria-controls="barra-ubicaciones" aria-label="Abrir menú"><span></span><span></span><span></span></button>
   </header>
 
   <main>
     <div class="bienvenida"><div><p class="eyebrow">INVENTARIO DEL VIVERO</p><h1>Todo tu stock, en un lugar.</h1><p class="intro">Consultá productos, organizá categorías y registrá cada movimiento.</p></div><button id="actualizar" class="secundario" type="button">↻ Actualizar</button></div>
-    <div class="barra-ubicaciones" style="display:flex;gap:1rem;flex-wrap:wrap"><a href="/invernaderos/">Invernaderos y ubicaciones</a><a href="/etiquetas/">Etiquetas QR</a><a href="/ejemplo-cantero.html">Ver cantero de ejemplo</a></div>
+    <nav id="barra-ubicaciones" class="barra-ubicaciones" aria-label="Enlaces rápidos"><a href="/invernaderos/">Invernaderos y ubicaciones</a><a href="/etiquetas/">Etiquetas QR</a><a href="/ejemplo-cantero.html">Ver cantero de ejemplo</a></nav>
     <nav class="pestanas" aria-label="Secciones del inventario">
       <button type="button" data-vista="productos" aria-current="page">Productos</button>
       <button type="button" data-vista="movimientos">Movimientos</button>
       <button type="button" data-vista="categorias">Categorías</button>
       <button type="button" data-vista="nuevo">Nuevo producto</button>
+      <button type="button" data-vista="editar">Editar productos</button>
     </nav>
-    <div class="contexto" id="contexto"><label>Ver categoría<select id="filtro-categoria"><option value="">Todas las categorías</option></select></label><span id="contexto-texto">Inventario completo</span></div>
+    <div class="contexto" id="contexto"><label>Ver categoría<select id="filtro-categoria"><option value="">Todas las categorías</option></select></label><div class="selector-categoria-movil"><button id="filtro-categoria-boton" type="button" aria-expanded="false" aria-controls="filtro-categoria-menu">Todas las categorías</button><div id="filtro-categoria-menu" class="selector-categoria-menu" hidden></div></div><span id="contexto-texto">Inventario completo</span></div>
     <div class="indicadores" id="indicadores" aria-label="Resumen del inventario"><div><span>Productos</span><strong id="total-productos">—</strong></div><div><span>Con stock bajo</span><strong id="total-bajos">—</strong></div><div><span>Categorías disponibles</span><strong id="total-categorias">—</strong></div></div>
     <p id="msg" role="status" aria-live="polite"></p>
 
@@ -390,11 +392,21 @@
               <th>Unidad</th>
               <th>Stock</th>
               <th>Mínimo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="productos"></tbody>
         </table>
       </div>
+    </section>
+
+    <section aria-labelledby="h-editar" data-panel="editar" hidden>
+      <h2 id="h-editar">Editar productos</h2>
+      <p class="descripcion">Seleccioná un producto ya cargado para completar o corregir todos sus datos.</p>
+      <form id="f-seleccionar-edicion">
+        <label>Producto existente<select id="producto-editar-select" required><option value="">Seleccioná un producto...</option></select></label>
+        <button id="abrir-edicion-producto" type="submit" disabled>Editar producto seleccionado</button>
+      </form>
     </section>
 
     <section aria-labelledby="h-nuevo" data-panel="nuevo" hidden>
@@ -437,7 +449,9 @@
         </label>
 
         <fieldset id="campos-categoria" class="campos-categoria"><legend>Datos de la categor&#237;a</legend><div id="campos-especificos"></div></fieldset>
-        <button type="submit">Crear producto</button>
+        <button id="guardar-producto" type="submit">Crear producto</button>
+        <button id="cancelar-edicion-producto" type="button" class="secundario" hidden>Cancelar edición</button>
+        <button id="desactivar-producto" type="button" class="secundario" hidden>Eliminar del catálogo</button>
       </form>
     </section>
 
@@ -518,6 +532,7 @@
 
     let categorias = [];
     let productosActuales = [];
+    let productoEditando = null;
     let categoriaActual = '';
     let apiKey = sessionStorage.getItem('apiKey') || '';
     let authToken = sessionStorage.getItem('authToken') || '';
@@ -576,9 +591,10 @@
     function fila(celdas) {
       const tr = document.createElement('tr');
 
-      celdas.forEach(({ texto, clase }) => {
+      celdas.forEach(({ texto, clase, nodo }) => {
         const td = document.createElement('td');
-        td.textContent = texto;
+        if (nodo) td.appendChild(nodo);
+        else td.textContent = texto;
 
         if (clase) {
           td.className = clase;
@@ -596,6 +612,19 @@
         : '';
     }
 
+    function accionesProducto(producto) {
+      const acciones = document.createElement('div');
+      acciones.style.cssText = 'display:flex;gap:.5rem';
+      for (const [accion, texto] of [['editarProducto','Editar'],['eliminarProducto','Eliminar']]) {
+        const boton = document.createElement('button');
+        boton.type = 'button'; boton.className = 'secundario'; boton.textContent = texto;
+        boton.dataset[accion] = producto.id;
+        boton.setAttribute('aria-label', texto + ' ' + producto.nombre);
+        acciones.appendChild(boton);
+      }
+      return acciones;
+    }
+
     function dibujarProductos() {
       const busqueda = $('buscar')
         .value
@@ -610,7 +639,7 @@
         const bajo = p.activo &&
           Number(p.stock) <= Number(p.stock_minimo);
 
-        return coincide && (!$('solo-bajo').checked || bajo);
+        return p.activo !== false && coincide && (!$('solo-bajo').checked || bajo);
       });
 
       $('productos').replaceChildren();
@@ -619,11 +648,11 @@
       $('resumen').textContent =
         productos.length + ' productos';
 
-      $('total-productos').textContent = productosActuales.length;
+      $('total-productos').textContent = productosActuales.filter(p => p.activo !== false).length;
       $('total-bajos').textContent = productosActuales.filter(p => p.activo && Number(p.stock) <= Number(p.stock_minimo)).length;
       if (!productos.length) {
         const tr = fila([{ texto: 'No hay productos para estos filtros.', clase: 'vacio' }]);
-        tr.firstChild.colSpan = 6;
+        tr.firstChild.colSpan = 7;
         $('productos').appendChild(tr);
       }
       productos.forEach(p => {
@@ -644,7 +673,14 @@
             clase: bajo ? 'bajo' : '',
           },
           { texto: Number(p.stock_minimo) },
+          { nodo: accionesProducto(p) },
         ]));
+      });
+      $('productos').querySelectorAll('[data-editar-producto]').forEach(boton => {
+        boton.addEventListener('click', () => iniciarEdicionProducto(Number(boton.dataset.editarProducto)));
+      });
+      $('productos').querySelectorAll('[data-eliminar-producto]').forEach(boton => {
+        boton.addEventListener('click', () => eliminarProducto(Number(boton.dataset.eliminarProducto)));
       });
 
       productosActuales
@@ -665,6 +701,15 @@
       );
 
       dibujarProductos();
+      actualizarSelectorEdicion();
+    }
+
+    function actualizarSelectorEdicion() {
+      const selector = $('producto-editar-select');
+      if (!selector) return;
+      selector.replaceChildren(new Option('Seleccioná un producto...', ''));
+      productosActuales.forEach(producto => selector.add(new Option(`${producto.codigo} - ${producto.nombre}`, producto.id)));
+      $('abrir-edicion-producto').disabled = !selector.value;
     }
 
     async function cargarHistorial() {
@@ -772,6 +817,74 @@
         contenedor.appendChild(nota);
       }
     }
+    function limpiarEdicionProducto() {
+      productoEditando = null;
+      $('f-prod').reset();
+      $('nueva-categoria').value = categoriaActual || 'general';
+      $('h-nuevo').textContent = 'Nuevo producto';
+      $('guardar-producto').textContent = 'Crear producto';
+      $('cancelar-edicion-producto').hidden = true;
+      $('desactivar-producto').hidden = true;
+      dibujarCampos();
+    }
+
+    function iniciarEdicionProducto(id) {
+      const producto = productosActuales.find(p => Number(p.id) === id);
+      if (!producto) return;
+      productoEditando = producto;
+      mostrarVista('nuevo');
+      $('f-prod').elements.codigo.value = producto.codigo || '';
+      $('f-prod').elements.nombre.value = producto.nombre || '';
+      $('f-prod').elements.unidad.value = producto.unidad || 'unidad';
+      $('f-prod').elements.stock_minimo.value = producto.stock_minimo ?? 0;
+      $('nueva-categoria').value = producto.categoria || 'general';
+      dibujarCampos();
+      Object.entries(producto.datos || {}).forEach(([clave, valor]) => {
+        const campo = [...document.querySelectorAll('#campos-especificos input, #campos-especificos select')]
+          .find(elemento => elemento.name === 'dato_' + clave);
+        if (campo) campo.value = valor;
+      });
+      $('h-nuevo').textContent = 'Editar producto';
+      $('guardar-producto').textContent = 'Guardar cambios';
+      $('cancelar-edicion-producto').hidden = false;
+      $('desactivar-producto').hidden = false;
+    }
+
+    async function eliminarProducto(id) {
+      const producto = productosActuales.find(p => Number(p.id) === id);
+      if (!producto) return;
+      const confirmacion = await window.solicitarTexto({
+        titulo: 'Eliminar «' + producto.nombre + '»',
+        descripcion: 'El producto se quitará del listado activo de stock. Su historial de movimientos se conservará.',
+        etiqueta: 'Escribí ELIMINAR para confirmar',
+        placeholder: 'ELIMINAR',
+        textoAceptar: 'Eliminar del stock',
+        peligro: true,
+        validar: texto => { if (texto.toUpperCase() !== 'ELIMINAR') throw new Error('Escribí ELIMINAR para confirmar.'); }
+      });
+      if (!confirmacion) return;
+      try {
+        await api('/productos/' + producto.id, { method: 'DELETE' });
+        productosActuales = productosActuales.filter(p => Number(p.id) !== id);
+        dibujarProductos();
+        actualizarSelectorEdicion();
+        if (productoEditando && Number(productoEditando.id) === id) limpiarEdicionProducto();
+        await refrescar();
+        mensaje('Producto eliminado del listado de stock. Historial conservado.', 'ok');
+      } catch (err) { mensaje(err.message, 'error'); }
+    }
+
+    $('cancelar-edicion-producto').addEventListener('click', limpiarEdicionProducto);
+    $('desactivar-producto').addEventListener('click', async () => {
+      if (productoEditando) await eliminarProducto(productoEditando.id);
+    });
+    $('producto-editar-select').addEventListener('change', event => {
+      $('abrir-edicion-producto').disabled = !event.target.value;
+    });
+    $('f-seleccionar-edicion').addEventListener('submit', event => {
+      event.preventDefault();
+      iniciarEdicionProducto(Number($('producto-editar-select').value));
+    });
     $('nueva-categoria').addEventListener('change', () => {
       $('campos-especificos').replaceChildren(); dibujarCampos();
     });
@@ -788,16 +901,12 @@
         for (const clave of Object.keys(datos)) {
           if (clave.startsWith('dato_')) { datos.datos[clave.slice(5)] = datos[clave]; delete datos[clave]; }
         }
-        await api('/productos', {
-          method: 'POST',
+        await api(productoEditando ? '/productos/' + productoEditando.id : '/productos', {
+          method: productoEditando ? 'PUT' : 'POST',
           body: JSON.stringify(datos),
         });
 
-        event.target.reset();
-
-        $('nueva-categoria').value =
-          categoriaActual || 'general';
-      dibujarCampos();
+        limpiarEdicionProducto();
 
         mensaje('Producto creado', 'ok');
 
@@ -856,6 +965,7 @@
         option.textContent = c.nombre;
         $('filtro-categoria').appendChild(option);
       });
+      actualizarSelectorCategoriaMovil();
 
       const slug = location.pathname.replace(/^\/|\/$/g, '');
 
@@ -910,6 +1020,48 @@
       await refrescar();
     }
 
+    function actualizarSelectorCategoriaMovil() {
+      const boton = $('filtro-categoria-boton');
+      const menu = $('filtro-categoria-menu');
+      const select = $('filtro-categoria');
+      if (!boton || !menu || !select) return;
+      boton.textContent = select.selectedOptions[0]?.textContent || 'Todas las categorías';
+      menu.replaceChildren();
+      [...select.options].forEach(option => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.textContent = option.textContent;
+        item.className = option.value === select.value ? 'seleccionado' : '';
+        item.addEventListener('click', () => {
+          select.value = option.value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        menu.appendChild(item);
+      });
+    }
+
+    const botonCategoriaMovil = $('filtro-categoria-boton');
+    const menuCategoriaMovil = $('filtro-categoria-menu');
+    if (botonCategoriaMovil && menuCategoriaMovil) {
+      botonCategoriaMovil.addEventListener('click', () => {
+        const abierto = botonCategoriaMovil.getAttribute('aria-expanded') === 'true';
+        botonCategoriaMovil.setAttribute('aria-expanded', String(!abierto));
+        menuCategoriaMovil.hidden = abierto;
+      });
+      document.addEventListener('click', event => {
+        if (!event.target.closest('.selector-categoria-movil')) {
+          botonCategoriaMovil.setAttribute('aria-expanded', 'false');
+          menuCategoriaMovil.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          botonCategoriaMovil.setAttribute('aria-expanded', 'false');
+          menuCategoriaMovil.hidden = true;
+        }
+      });
+    }
+
     let vistaActual = 'productos';
     let movimientoVista = 'historial';
 
@@ -952,6 +1104,7 @@
     window.addEventListener('hashchange', leerVista);
     leerVista();
     $('filtro-categoria').addEventListener('change', event => {
+      actualizarSelectorCategoriaMovil();
       location.href = (event.target.value ? '/' + event.target.value + '/' : '/') + location.hash;
     });
     $('actualizar').addEventListener('click', async () => {
@@ -985,7 +1138,7 @@
       boton.innerHTML = 'Verificando <span class="spinner" aria-hidden="true"></span>';
       error.textContent = '';
       try {
-        const response = await fetch('/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ username, password }) });
+        const response = await fetch(window.stockApiUrl('/auth/login'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: window.stockApiCredentials, body: JSON.stringify({ username, password }) });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || 'No se pudo iniciar sesión.');
         if (response.status === 401) throw new Error('La clave no es válida. Revisala e intentá nuevamente.');
@@ -1033,6 +1186,15 @@
       authToken = '';
       location.reload();
     });
+
+    const menuStock = $('menu-toggle-stock');
+    const enlacesStock = $('barra-ubicaciones');
+    if (menuStock && enlacesStock) {
+      const cerrarMenuStock = () => { menuStock.setAttribute('aria-expanded', 'false'); menuStock.setAttribute('aria-label', 'Abrir menú'); enlacesStock.classList.remove('menu-abierto'); };
+      menuStock.addEventListener('click', () => { const abierto = menuStock.getAttribute('aria-expanded') === 'true'; menuStock.setAttribute('aria-expanded', String(!abierto)); menuStock.setAttribute('aria-label', abierto ? 'Abrir menú' : 'Cerrar menú'); enlacesStock.classList.toggle('menu-abierto', !abierto); });
+      enlacesStock.querySelectorAll('a').forEach(enlace => enlace.addEventListener('click', cerrarMenuStock));
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') cerrarMenuStock(); });
+    }
 
     if (authToken || apiKey) {
       iniciar().catch(err => {

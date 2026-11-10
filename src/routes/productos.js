@@ -7,7 +7,7 @@ const router = express.Router();
 router.use((req, res, next) => {
   const categoria = req.method === 'GET'
     ? req.query.categoria
-    : req.body.categoria;
+    : req.body?.categoria;
 
   if (
     categoria !== undefined &&
@@ -67,7 +67,7 @@ router.get('/', async (req, res, next) => {
     const { rows } = await pool.query(
       `SELECT s.*, p.datos
        FROM stock.stock_actual s JOIN stock.productos p USING (id)
-       WHERE ($1::text IS NULL OR s.categoria = $1)
+       WHERE s.activo AND ($1::text IS NULL OR s.categoria = $1)
        ORDER BY s.nombre`,
       [req.query.categoria || null]
     );
@@ -165,6 +165,7 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
   try {
     const {
+      codigo,
       nombre,
       unidad,
       stock_minimo,
@@ -174,15 +175,17 @@ router.put('/:id', async (req, res, next) => {
 
     const { rows } = await pool.query(
       `UPDATE stock.productos SET
-         nombre       = COALESCE($1, nombre),
-         unidad       = COALESCE($2, unidad),
-         stock_minimo = COALESCE($3, stock_minimo),
-         activo       = COALESCE($4, activo),
-         categoria    = COALESCE($5, categoria),
-         datos        = COALESCE($7::jsonb, datos)
-       WHERE id = $6
+         codigo       = COALESCE($1, codigo),
+         nombre       = COALESCE($2, nombre),
+         unidad       = COALESCE($3, unidad),
+         stock_minimo = COALESCE($4, stock_minimo),
+         activo       = COALESCE($5, activo),
+         categoria    = COALESCE($6, categoria),
+         datos        = COALESCE($8::jsonb, datos)
+       WHERE id = $7
        RETURNING *`,
       [
+        codigo,
         nombre,
         unidad,
         stock_minimo,
@@ -203,6 +206,20 @@ router.put('/:id', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    if (!/^\d+$/.test(req.params.id) || !Number.isSafeInteger(Number(req.params.id)) || Number(req.params.id) < 1 || Number(req.params.id) > 2147483647) {
+      return res.status(400).json({ error: 'Identificador de producto inválido' });
+    }
+    const { rows } = await pool.query(
+      `UPDATE stock.productos SET activo=false WHERE id=$1 RETURNING id,codigo,nombre,activo`,
+      [req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ message: 'Producto desactivado del catálogo', producto: rows[0] });
+  } catch (err) { next(err); }
 });
 
 module.exports = router;
