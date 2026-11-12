@@ -542,6 +542,7 @@
 
     <section aria-labelledby="h-mov" data-panel="movimientos" data-mopanel="registro" hidden>
       <h2 id="h-mov">Registrar movimiento</h2>
+      <p class="descripcion">Con conexión se guarda al instante. Sin conexión queda pendiente y se sube automáticamente al recuperar Internet.</p>
 
       <form id="f-mov">
         <label>
@@ -590,6 +591,12 @@
 
     <section aria-labelledby="h-hist" data-panel="movimientos" data-mopanel="historial" hidden>
       <div id="pendientes-offline" class="pendientes-offline" hidden></div>
+      <div class="filtros historial-filtros">
+        <label>Producto<select id="historial-producto"><option value="">Todos</option></select></label>
+        <label>Tipo<select id="historial-tipo"><option value="">Todos</option><option value="entrada">Entradas</option><option value="salida">Salidas</option><option value="ajuste">Ajustes</option></select></label>
+        <label>Desde<input id="historial-desde" type="date"></label>
+        <label>Hasta<input id="historial-hasta" type="date"></label>
+      </div>
       <h2 id="h-hist">Últimos movimientos</h2><p class="descripcion">Las 30 operaciones más recientes de la categoría seleccionada.</p>
 
       <div class="tabla">
@@ -944,14 +951,28 @@
         '/movimientos' + filtroCategoria()
       );
 
+      const selectorProducto = $('historial-producto');
+      if (selectorProducto && selectorProducto.options.length === 1) {
+        productosActuales.forEach(producto => selectorProducto.add(new Option(`${producto.codigo} - ${producto.nombre}`, producto.id)));
+      }
+      const productoId = selectorProducto?.value || '';
+      const tipo = $('historial-tipo')?.value || '';
+      const desde = $('historial-desde')?.value || '';
+      const hasta = $('historial-hasta')?.value || '';
+      const filtrados = movimientos.filter(m => {
+        const fecha = String(m.creado_en || '').slice(0, 10);
+        return (!productoId || String(m.producto_id) === productoId) &&
+          (!tipo || m.tipo === tipo) && (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+      });
+
       $('historial').replaceChildren();
 
-      if (!movimientos.length) {
+      if (!filtrados.length) {
         const tr = fila([{ texto: 'Todavía no hay movimientos en esta categoría.', clase: 'vacio' }]);
         tr.firstChild.colSpan = 6;
         $('historial').appendChild(tr);
       }
-      movimientos.slice(0, 30).forEach(m => {
+      filtrados.slice(0, 30).forEach(m => {
         $('historial').appendChild(fila([
           {
             texto: new Date(m.creado_en)
@@ -1466,6 +1487,8 @@
       areaActual = event.target.value;
       await refrescar();
     });
+    document.querySelectorAll('#historial-producto, #historial-tipo, #historial-desde, #historial-hasta')
+      .forEach(control => control.addEventListener('change', () => cargarHistorial()));
     $('actualizar').addEventListener('click', async () => {
       $('actualizar').disabled = true;
       try { await refrescar(); mensaje('Inventario actualizado', 'ok'); }

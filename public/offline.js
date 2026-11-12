@@ -135,7 +135,6 @@
     const item = { id: crypto.randomUUID(), path, options: opcionesSinCredenciales(options), creado: Date.now(), intentos: 0 };
     await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
     mensajeOffline('Guardado sin conexión. Se sincronizará cuando vuelva Internet.');
-    mensajeOffline('Guardado sin conexion. Se subira cuando vuelva Internet.');
     return { queued: true, offline: true };
   }
 
@@ -208,7 +207,12 @@
             item.ultimoError = error.message;
             if (error.status >= 400 && error.status < 500 && error.status !== 408 && error.status !== 429) {
               item.estado = 'error';
-              mensajeOffline(`No se pudo subir el movimiento: ${error.message}`);
+              let detalle = error.message;
+              try {
+                const datos = JSON.parse(item.options?.body || '{}');
+                detalle = `${datos.tipo || 'Movimiento'} de ${datos.cantidad || ''} unidades: ${error.message}`;
+              } catch {}
+              mensajeOffline(`No se pudo subir el movimiento: ${detalle}`);
             }
             await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
             errores.push(error.message);

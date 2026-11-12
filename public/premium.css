@@ -426,6 +426,7 @@ main { isolation: isolate; }
 section[data-panel="productos"] { border-top: 3px solid #dcebdc; }
 .filtros { border-bottom: 1px solid #e5ede5; }
 .tabla { overflow: auto; background: #fff; }
+.historial-filtros { display: grid; grid-template-columns: minmax(14rem, 2fr) repeat(3, minmax(8rem, 1fr)); gap: .7rem; align-items: end; }
 tbody tr { transition: background .15s; }
 tbody tr:hover { background: #f4f9f3; }
 @media (max-width: 600px) {
@@ -468,6 +469,7 @@ tbody tr:hover { background: #f4f9f3; }
   .indicadores span { font-size: .62rem; line-height: 1.15; }
   .indicadores strong { font-size: 1.35rem; margin-top: .35rem; }
   .filtros { display: grid; grid-template-columns: minmax(0, 1fr); gap: .65rem; }
+  .historial-filtros { grid-template-columns: minmax(0, 1fr); }
   .filtros > label { width: 100%; max-width: none; }
   .filtros > label:first-child { max-width: none; }
   section { min-width: 0; padding: .9rem; }
