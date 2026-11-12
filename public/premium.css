@@ -216,10 +216,12 @@ main { margin-inline: auto; }
 @media (max-width: 700px) {
   header > .menu-toggle { display: grid; flex: 0 0 auto; }
   main > .barra-ubicaciones { display: none !important; }
-  main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: .75rem; right: .75rem; z-index: 30; display: grid !important; gap: .45rem !important; padding: .7rem; border: 1px solid #dce4dd; border-radius: 16px; background: #f7faf7; box-shadow: 0 16px 35px #142f2930; }
-  main > .barra-ubicaciones.menu-abierto a, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: .75rem .9rem; border: 1px solid #dce8dc; border-radius: 11px; background: #fff; color: #214f42; font-size: .84rem; font-weight: 700; box-shadow: 0 2px 6px #214f420b; }
-  main > .barra-ubicaciones.menu-abierto a::after { content: '›'; color: #91a395; font-size: 1.3rem; line-height: 1; }
-  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion:hover { background: #edf3ee; border-color: #aec9b0; }
+  main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: auto; right: .75rem; width: min(320px, calc(100vw - 1.5rem)); z-index: 30; display: grid !important; gap: 0 !important; padding: .45rem .65rem; border: 1px solid #dce4dd; border-radius: 12px; background: #fff; box-shadow: 0 14px 30px #142f2930; }
+  main > .barra-ubicaciones.menu-abierto a, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { display: flex; align-items: center; justify-content: flex-start; min-height: 42px; padding: .65rem .35rem; border: 0; border-bottom: 1px solid #edf1eb; border-radius: 0; background: transparent; color: #214f42; font-size: .82rem; font-weight: 650; box-shadow: none; }
+  main > .barra-ubicaciones.menu-abierto a::after { content: none; }
+  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible { background: #f2f6f1; color: #153c2b; }
+  main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { border-bottom: 0; color: #a33b20; }
+  main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion:hover { background: #fff3ee; color: #7e2e1b; }
 }
 
 /* Layout táctil para tablets y teléfonos. */
