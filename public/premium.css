@@ -402,9 +402,10 @@ section[data-panel="categorias"] > #categorias { display: grid; }
   .pendiente-offline-item button { flex: 1; }
   .alertas-stock { padding: .75rem; }
   .alertas-stock h2 { margin-bottom: 0; font-size: .95rem; }
-  .alerta-stock-item { align-items: center; flex-direction: row; gap: .45rem; padding: .45rem 0; font-size: .76rem; }
-  .alerta-stock-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
-  .alerta-stock-item button { width: auto; min-height: 34px; padding: .35rem .45rem; font-size: .68rem; }
+  .alerta-stock-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: .55rem; padding: .55rem 0; font-size: .8rem; }
+  .alerta-stock-item span:first-child { min-width: 0; overflow: visible; overflow-wrap: anywhere; white-space: normal; text-overflow: clip; line-height: 1.3; }
+  .alerta-stock-item small { grid-column: 1 / -1; }
+  .alerta-stock-item button { width: auto !important; min-height: 34px; padding: .35rem .5rem; font-size: .68rem; }
 }
 
 /* Ajustes finales para teléfonos: el área nueva debe seguir siendo usable
