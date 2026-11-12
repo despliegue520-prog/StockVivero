@@ -1,4 +1,4 @@
-const CACHE = 'stock-shell-v29';
+const CACHE = 'stock-shell-v30';
 const SHELL = [
   '/', '/index.html', '/login.css', '/premium.css', '/offline.js', '/logo.png',
   '/ubicaciones.html', '/interfaz-ubicaciones.css', '/mapa-cantero.css',

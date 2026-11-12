@@ -633,10 +633,11 @@
       contador.textContent = noLeidas;
       contador.hidden = !noLeidas;
       lista.replaceChildren();
-      if (!notificaciones.length) {
-        const vacio = document.createElement('p'); vacio.className = 'notificaciones-vacio'; vacio.textContent = 'No hay notificaciones.'; lista.appendChild(vacio); return;
+      const visibles = notificaciones.filter(n => !notificacionesLeidas.has(n.id));
+      if (!visibles.length) {
+        const vacio = document.createElement('p'); vacio.className = 'notificaciones-vacio'; vacio.textContent = 'No hay notificaciones nuevas.'; lista.appendChild(vacio); return;
       }
-      notificaciones.slice(0, 30).forEach(n => {
+      visibles.slice(0, 30).forEach(n => {
         const item = document.createElement('button'); item.type = 'button'; item.className = `notificacion-item${notificacionesLeidas.has(n.id) ? '' : ' nueva'}`;
         const tipo = document.createElement('strong'); tipo.textContent = n.tipo;
         const texto = document.createElement('span'); texto.textContent = n.texto;
