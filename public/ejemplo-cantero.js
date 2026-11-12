@@ -32,11 +32,26 @@ const datos = {
     { tipo: 'ingreso', variedad: 'ARAUCO', lote: 'ARA-EJEMPLO', cantidad: 45, origen: null, destino: filas[0].codigoVisible, motivo: 'Carga inicial de ejemplo', fecha: '2026-10-30T09:00:00-03:00' }
   ]
 };
+const demoMovimientosKey = 'cantero-ejemplo-movimientos';
+try {
+  const guardados = JSON.parse(localStorage.getItem(demoMovimientosKey) || '[]');
+  if (Array.isArray(guardados)) datos.movimientos.unshift(...guardados);
+} catch {}
 async function api(ruta, opciones) {
+  if (opciones?.method === 'POST' && ruta.endsWith('/movimientos')) {
+    const payload = JSON.parse(opciones.body || '{}');
+    const movimiento = { tipo: payload.tipo, variedad: payload.variedad || 'Planta de ejemplo', lote: payload.lote || 'Lote de ejemplo', cantidad: payload.cantidad, origen: payload.origen_detalle || null, destino: payload.destino_detalle || null, motivo: payload.motivo || 'Movimiento simulado', fecha: payload.fecha || new Date().toISOString() };
+    datos.movimientos.unshift(movimiento);
+    const guardados = JSON.parse(localStorage.getItem(demoMovimientosKey) || '[]');
+    guardados.unshift(movimiento);
+    localStorage.setItem(demoMovimientosKey, JSON.stringify(guardados.slice(0, 30)));
+    return { ok: true, demostracion: true };
+  }
   if (opciones) throw new Error('Esta es una demostración: no se guardan operaciones. Para cargar datos reales, entrá a Invernaderos.');
   return datos;
 }
 // No restaurar ni modificar borradores reales al explorar esta vista.
+document.querySelector('.aviso-demo p').textContent = 'Esta ficha usa datos ficticios. Los movimientos se simulan y se guardan solo en este navegador; nunca modifican el stock real.';
 montarFicha({ ...actual, demostracion: true }, [actual, ...filas]).then(() => {
   for (const fila of filas) {
     const enlace = [...document.querySelectorAll('.mapa-encabezado a')].find(a => a.getAttribute('href') === fila.ruta);
