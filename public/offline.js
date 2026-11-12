@@ -79,11 +79,17 @@
   async function actualizarIndicador() {
     const indicador = document.getElementById('estado-conexion');
     if (!indicador) return;
-    const pendientes = (await listarPendientes()).length;
+    const cola = await listarPendientes();
+    const pendientes = cola.filter(item => item.estado !== 'error').length;
+    const errores = cola.filter(item => item.estado === 'error').length;
     pendientesActuales = pendientes;
+    const detalle = [
+      pendientes ? `${pendientes} pendiente${pendientes === 1 ? '' : 's'}` : '',
+      errores ? `${errores} con error` : '',
+    ].filter(Boolean).join(' · ');
     indicador.textContent = navigator.onLine
-      ? (pendientes ? `Conectado · ${pendientes} pendiente${pendientes === 1 ? '' : 's'}` : 'Conectado')
-      : `Sin conexión${pendientes ? ` · ${pendientes} pendiente${pendientes === 1 ? '' : 's'}` : ''}`;
+      ? `Conectado${detalle ? ` · ${detalle}` : ''}`
+      : `Sin conexión${detalle ? ` · ${detalle}` : ''}`;
     indicador.dataset.estado = navigator.onLine ? 'online' : 'offline';
     indicador.style.background = navigator.onLine ? '#28604e' : '#8a592e';
   }
