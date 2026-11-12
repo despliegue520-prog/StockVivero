@@ -799,7 +799,8 @@
         .filter(p => p.activo !== false && Number(p.stock_minimo) > 0 && Number(p.stock) <= Number(p.stock_minimo))
         .sort((a, b) => Number(a.stock) - Number(b.stock));
       lista.replaceChildren();
-      panel.hidden = !bajos.length;
+      const enProductos = document.querySelector('[data-vista="productos"]')?.getAttribute('aria-current') === 'page';
+      panel.hidden = !enProductos || !bajos.length;
       bajos.forEach(producto => {
         const item = document.createElement('div');
         item.className = 'alerta-stock-item';
@@ -1436,6 +1437,8 @@
       });
       const hash = '#' + vista + (vista === 'movimientos' ? '/' + movimientoVista : '');
       if (location.hash !== hash) history.replaceState(null, '', hash);
+      if (vista === 'productos') dibujarAlertasStock();
+      else if ($('alertas-stock')) $('alertas-stock').hidden = true;
       mensaje('');
     }
 
