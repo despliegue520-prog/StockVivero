@@ -94,6 +94,11 @@ app.get('/auth/me', autenticar, (req, res) => res.json({ usuario: req.user }));
 
 // Conservamos la protección actual por API key.
 app.use((req, res, next) => {
+  const esLecturaQr = req.method === 'GET' && (
+    (req.path === '/api/ubicaciones' && typeof req.query.ruta === 'string' && req.query.ruta.startsWith('/')) ||
+    /^\/api\/plantas\/detalle\/\d+$/.test(req.path)
+  );
+  if (esLecturaQr) return next();
   // El login por usuarios es el mecanismo principal; la API key queda como compatibilidad.
   autenticar(req, res, next);
 });

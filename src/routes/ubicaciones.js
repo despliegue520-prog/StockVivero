@@ -16,10 +16,13 @@ function baseUrl() {
 
 router.get('/', async (req, res, next) => {
   try {
+    const ruta = typeof req.query.ruta === 'string' && req.query.ruta.startsWith('/') ? req.query.ruta : null;
     const { rows } = await pool.query(`SELECT u.*, COALESCE(s.ocupado,0)::int AS ocupado
       FROM stock.ubicaciones u LEFT JOIN (
         SELECT fila_id,SUM(cantidad) AS ocupado FROM stock.planta_saldos GROUP BY fila_id
-      ) s ON s.fila_id=u.id ORDER BY u.ruta`);
+      ) s ON s.fila_id=u.id
+      WHERE ($1::text IS NULL OR u.ruta=$1 OR u.ruta LIKE $2)
+      ORDER BY u.ruta`, [ruta, ruta ? `${ruta}%` : null]);
     res.json({ ubicaciones: rows, categorias: categorias.map(c => ({ ...c, ruta: `/${c.slug}/` })) });
   } catch (err) { next(err); }
 });

@@ -63,7 +63,11 @@ function tarjeta(item, seleccion = false) {
   return card;
 }
 async function iniciar() {
-  const { ubicaciones, categorias } = await api('/api/ubicaciones');
+  const rutaInicial = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+  const cortoInicial = rutaInicial.match(/^\/canteros\/(I[0-9]{2,3})-(C[0-9]{2,3})\/$/);
+  const rutaConsulta = cortoInicial ? '/invernaderos/' + cortoInicial[1] + '/canteros/' + cortoInicial[2] + '/' : rutaInicial;
+  const consultaPublica = cortoInicial || rutaInicial.startsWith('/invernaderos/');
+  const { ubicaciones, categorias } = await api('/api/ubicaciones' + (consultaPublica ? '?ruta=' + encodeURIComponent(rutaConsulta) : ''));
   catalogoUbicaciones = ubicaciones;
   const ruta = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
   const etiquetas = ruta === '/etiquetas/';
