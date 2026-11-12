@@ -962,8 +962,15 @@
       ]);
     }
 
-    window.addEventListener('stock-offline-synced', () => {
-      refrescar().catch(error => mensaje(error.message, 'error'));
+    window.addEventListener('stock-offline-synced', async () => {
+      try {
+        await refrescar();
+        movimientoVista = 'historial';
+        mostrarVista('movimientos');
+        mensaje('Movimiento sincronizado y visible en el historial.', 'ok');
+      } catch (error) {
+        mensaje(error.message, 'error');
+      }
     });
 
 
@@ -1155,14 +1162,15 @@
 
         event.target.reset();
 
-        mensaje(
-          resultado?.offline
-            ? 'Movimiento guardado sin conexión. Se subirá automáticamente cuando vuelva Internet.'
-            : 'Movimiento registrado',
-          'ok'
-        );
-
-        await refrescar();
+        if (resultado?.offline) {
+          mensaje('Movimiento guardado sin conexión. Se subirá automáticamente cuando vuelva Internet.', 'ok');
+          await refrescar();
+        } else {
+          await refrescar();
+          movimientoVista = 'historial';
+          mostrarVista('movimientos');
+          mensaje('Movimiento registrado y visible en el historial.', 'ok');
+        }
       } catch (err) {
         mensaje(err.message, 'error');
       }
