@@ -412,8 +412,8 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 
 /* Pulido visual de la pantalla principal */
 main { isolation: isolate; }
-.bienvenida { position: relative; overflow: hidden; border: 1px solid #b9d5bb; background: linear-gradient(135deg, #edf7ec 0%, #cfe8d0 100%); box-shadow: 0 8px 24px #214f4216; }
-.bienvenida::after { content: ''; position: absolute; right: -4rem; bottom: -5rem; width: 15rem; height: 15rem; border-radius: 50%; background: #afd3b280; pointer-events: none; }
+.bienvenida { position: relative; overflow: hidden; border: 1px solid #9fc5a2; background: linear-gradient(135deg, #dcefdc 0%, #afd2b1 100%); box-shadow: 0 8px 24px #214f4220; }
+.bienvenida::after { content: ''; position: absolute; right: -4rem; bottom: -5rem; width: 15rem; height: 15rem; border-radius: 50%; background: #8fbd9580; pointer-events: none; }
 .bienvenida > * { position: relative; z-index: 1; }
 .bienvenida h1 { color: #193c2c !important; }
 .bienvenida .intro { color: #5d6b61 !important; }
