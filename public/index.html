@@ -626,7 +626,7 @@
       const cola = await window.stockOffline?.pendientesDetalle?.() || [];
       const bajos = productosActuales.filter(p => p.activo !== false && Number(p.stock) <= Number(p.stock_minimo));
       notificaciones = [
-        ...bajos.map(p => ({ id: `stock-${p.id}`, tipo: 'Stock bajo', texto: `${p.nombre}: quedan ${Number(p.stock)} (mínimo ${Number(p.stock_minimo)})` })),
+        ...bajos.map(p => ({ id: `stock-${p.id}`, productoId: p.id, tipo: 'Stock bajo', texto: `${p.nombre}: quedan ${Number(p.stock)} (mínimo ${Number(p.stock_minimo)})` })),
         ...cola.map(item => ({ id: `offline-${item.id}`, tipo: item.estado === 'error' ? 'Movimiento con error' : 'Movimiento pendiente', texto: item.ultimoError || 'Se sincronizará cuando vuelva Internet.' })),
       ];
       const noLeidas = notificaciones.filter(n => !notificacionesLeidas.has(n.id)).length;
@@ -641,7 +641,21 @@
         const tipo = document.createElement('strong'); tipo.textContent = n.tipo;
         const texto = document.createElement('span'); texto.textContent = n.texto;
         item.append(tipo, texto);
-        item.onclick = () => { notificacionesLeidas.add(n.id); localStorage.setItem('stock-notificaciones-leidas', JSON.stringify([...notificacionesLeidas])); actualizarNotificaciones(); };
+        item.onclick = () => {
+          notificacionesLeidas.add(n.id);
+          localStorage.setItem('stock-notificaciones-leidas', JSON.stringify([...notificacionesLeidas]));
+          if (n.id.startsWith('stock-')) {
+            mostrarVista('productos');
+            const producto = productosActuales.find(p => Number(p.id) === Number(n.productoId));
+            if (producto) { $('buscar').value = producto.nombre; dibujarProductos(); }
+          } else {
+            movimientoVista = 'historial';
+            mostrarVista('movimientos');
+          }
+          campanaNotificaciones?.setAttribute('aria-expanded', 'false');
+          if (panelNotificaciones) panelNotificaciones.hidden = true;
+          actualizarNotificaciones();
+        };
         lista.appendChild(item);
       });
     }
