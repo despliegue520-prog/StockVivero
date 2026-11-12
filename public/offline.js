@@ -185,11 +185,14 @@
         let sincronizadas = 0;
         const errores = [];
         for (const item of cola.sort((a, b) => a.creado - b.creado)) {
+          if (item.estado === 'error') continue;
           try {
             const response = await enviar(item.path, item.options);
             if (!response.ok) {
               const detalle = await response.clone().json().catch(() => ({}));
-              throw new Error(detalle.error || `HTTP ${response.status}`);
+              const error = new Error(detalle.error || `HTTP ${response.status}`);
+              error.status = response.status;
+              throw error;
             }
             await transaccion(QUEUE_STORE, 'readwrite', store => store.delete(item.id));
             sincronizadas++;
@@ -197,6 +200,10 @@
             item.intentos = (item.intentos || 0) + 1;
             item.ultimoIntento = Date.now();
             item.ultimoError = error.message;
+            if (error.status >= 400 && error.status < 500 && error.status !== 408 && error.status !== 429) {
+              item.estado = 'error';
+              mensajeOffline(`No se pudo subir el movimiento: ${error.message}`);
+            }
             await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
             errores.push(error.message);
           }
