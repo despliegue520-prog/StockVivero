@@ -372,7 +372,7 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 .pendiente-offline-item { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; align-items: center; gap: .65rem; padding: .55rem 0; border-top: 1px solid #f1dfbd; font-size: .82rem; }
 .pendiente-offline-item small { color: #8a642b; overflow-wrap: anywhere; }
 .pendiente-offline-item button { min-height: 36px; padding: .45rem .65rem; font-size: .75rem; }
-.alertas-stock { border-color: #efc1b2; background: #fff8f5; }
+.alertas-stock { border-color: #efc1b2; background: #fff8f5; max-height: 18rem; overflow-y: auto; }
 .alertas-stock h2 { color: #a33b20; margin-bottom: .7rem; }
 .alerta-stock-item { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .65rem 0; border-top: 1px solid #f1d8cf; color: #713526; font-size: .85rem; }
 .alerta-stock-item button { min-height: 36px; padding: .4rem .65rem; font-size: .75rem; white-space: nowrap; }
@@ -380,8 +380,11 @@ section[data-panel="categorias"] > #categorias { display: grid; }
   .pendiente-offline-item { grid-template-columns: 1fr; gap: .35rem; }
   .pendiente-offline-item > span:last-child { display: flex; gap: .4rem; }
   .pendiente-offline-item button { flex: 1; }
-  .alerta-stock-item { align-items: stretch; flex-direction: column; gap: .45rem; }
-  .alerta-stock-item button { width: 100%; }
+  .alertas-stock { padding: .75rem; }
+  .alertas-stock h2 { margin-bottom: .4rem; font-size: .95rem; }
+  .alerta-stock-item { align-items: center; flex-direction: row; gap: .45rem; padding: .45rem 0; font-size: .76rem; }
+  .alerta-stock-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .alerta-stock-item button { width: auto; min-height: 34px; padding: .35rem .45rem; font-size: .68rem; }
 }
 
 /* Ajustes finales para teléfonos: el área nueva debe seguir siendo usable
