@@ -415,6 +415,8 @@ main { isolation: isolate; }
 .bienvenida { position: relative; overflow: hidden; border: 1px solid #dbe7dc; background: linear-gradient(135deg, #ffffff 0%, #f4faf3 100%); box-shadow: 0 8px 24px #214f420b; }
 .bienvenida::after { content: ''; position: absolute; right: -4rem; bottom: -5rem; width: 15rem; height: 15rem; border-radius: 50%; background: #dcefdc80; pointer-events: none; }
 .bienvenida > * { position: relative; z-index: 1; }
+.bienvenida h1 { color: #193c2c !important; }
+.bienvenida .intro { color: #5d6b61 !important; }
 .pestanas button { transition: background .18s, color .18s, transform .18s; }
 .pestanas button:not([aria-current]):hover { transform: translateY(-1px); }
 .contexto { box-shadow: 0 4px 16px #214f4208; }
