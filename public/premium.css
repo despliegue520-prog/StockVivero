@@ -47,6 +47,7 @@ main { max-width: 1240px; padding: 2.5rem 1.25rem 5rem; gap: 1.5rem; }
 .barra-ubicaciones a { border: 1px solid #d8e5d7; border-radius: 9px; background: #fff; color: var(--premium-forest); padding: .55rem .8rem; font-size: .77rem; font-weight: 700; text-decoration: none; box-shadow: 0 3px 9px #1c55300b; transition: transform .2s, border-color .2s, background .2s; }
 .barra-ubicaciones a:hover { border-color: #9cbd9e; background: var(--premium-mint); transform: translateY(-2px); }
 .header-actions .boton-sesion { display: none; }
+.header-actions { display: none; }
 .barra-ubicaciones .enlace-cerrar-sesion { border: 1px solid #e7c0b3; border-radius: 9px; background: #fff8f5; color: #a33b20; padding: .55rem .8rem; font-size: .77rem; font-weight: 700; box-shadow: 0 3px 9px #1c55300b; }
 .barra-ubicaciones .enlace-cerrar-sesion:hover { background: #ffe9e1; border-color: #d99c89; filter: none; }
 
