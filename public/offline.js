@@ -233,6 +233,20 @@
 
     pendientes() { return pendientesActuales; },
     async pendientesAsync() { return (await listarPendientes()).length; },
+    async pendientesDetalle() { return listarPendientes(); },
+    async reintentar(id) {
+      const item = await transaccion(QUEUE_STORE, 'readonly', store => store.get(id));
+      if (!item) return;
+      delete item.estado;
+      await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
+      await actualizarIndicador();
+      await this.sincronizar();
+    },
+    async descartar(id) {
+      await transaccion(QUEUE_STORE, 'readwrite', store => store.delete(id));
+      await actualizarIndicador();
+      window.dispatchEvent(new Event('stock-offline-queue-changed'));
+    },
   };
 
   window.addEventListener('online', () => { window.stockOffline.sincronizar(); });

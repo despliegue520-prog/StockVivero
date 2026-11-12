@@ -584,6 +584,7 @@
     </section>
 
     <section aria-labelledby="h-hist" data-panel="movimientos" data-mopanel="historial" hidden>
+      <div id="pendientes-offline" class="pendientes-offline" hidden></div>
       <h2 id="h-hist">Últimos movimientos</h2><p class="descripcion">Las 30 operaciones más recientes de la categoría seleccionada.</p>
 
       <div class="tabla">
@@ -828,6 +829,42 @@
       $('abrir-edicion-producto').disabled = !selector.value;
     }
 
+    async function dibujarPendientesOffline() {
+      const panel = $('pendientes-offline');
+      if (!panel || !window.stockOffline?.pendientesDetalle) return;
+      const cola = await window.stockOffline.pendientesDetalle();
+      panel.replaceChildren();
+      if (!cola.length) { panel.hidden = true; return; }
+      panel.hidden = false;
+      const titulo = document.createElement('strong');
+      titulo.textContent = 'Movimientos offline';
+      panel.appendChild(titulo);
+      cola.forEach(item => {
+        let datos = {};
+        try { datos = JSON.parse(item.options?.body || '{}'); } catch {}
+        const producto = productosActuales.find(p => Number(p.id) === Number(datos.producto_id));
+        const fila = document.createElement('div');
+        fila.className = 'pendiente-offline-item';
+        const texto = document.createElement('span');
+        texto.textContent = `${datos.tipo || 'Movimiento'} · ${producto?.nombre || 'Producto'} · ${datos.cantidad ?? ''}`;
+        const estado = document.createElement('small');
+        estado.textContent = item.estado === 'error' ? `Error: ${item.ultimoError || 'no se pudo subir'}` : 'Pendiente de sincronizar';
+        const acciones = document.createElement('span');
+        if (item.estado === 'error') {
+          const reintentar = document.createElement('button');
+          reintentar.type = 'button'; reintentar.textContent = 'Reintentar';
+          reintentar.onclick = async () => { await window.stockOffline.reintentar(item.id); await refrescar(); };
+          acciones.appendChild(reintentar);
+        }
+        const descartar = document.createElement('button');
+        descartar.type = 'button'; descartar.className = 'secundario'; descartar.textContent = 'Descartar';
+        descartar.onclick = async () => { await window.stockOffline.descartar(item.id); await dibujarPendientesOffline(); };
+        acciones.appendChild(descartar);
+        fila.append(texto, estado, acciones);
+        panel.appendChild(fila);
+      });
+    }
+
     async function cargarHistorial() {
       const movimientos = await api(
         '/movimientos' + filtroCategoria()
@@ -960,6 +997,7 @@
         cargarProductos(),
         cargarHistorial(),
       ]);
+      await dibujarPendientesOffline();
     }
 
     window.addEventListener('stock-offline-synced', async () => {

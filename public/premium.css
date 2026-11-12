@@ -368,6 +368,16 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 
 .categorias a[aria-current]::after { color: #b88643; }
 
+.pendientes-offline { display: grid; gap: .55rem; margin: 0 0 1rem; padding: .85rem; border: 1px solid #edc68d; border-radius: 10px; background: #fff8e9; color: #624617; }
+.pendiente-offline-item { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; align-items: center; gap: .65rem; padding: .55rem 0; border-top: 1px solid #f1dfbd; font-size: .82rem; }
+.pendiente-offline-item small { color: #8a642b; overflow-wrap: anywhere; }
+.pendiente-offline-item button { min-height: 36px; padding: .45rem .65rem; font-size: .75rem; }
+@media (max-width: 600px) {
+  .pendiente-offline-item { grid-template-columns: 1fr; gap: .35rem; }
+  .pendiente-offline-item > span:last-child { display: flex; gap: .4rem; }
+  .pendiente-offline-item button { flex: 1; }
+}
+
 /* Ajustes finales para teléfonos: el área nueva debe seguir siendo usable
    y la tabla se convierte en tarjetas sin perder sus etiquetas. */
 @media (max-width: 600px) {
