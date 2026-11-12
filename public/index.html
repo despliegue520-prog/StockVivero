@@ -374,6 +374,7 @@
   <header>
     <a class="marca" href="/" aria-label="Los Aromos, inicio"><img class="marca-logo" src="/logo.png" alt="" width="48" height="48"><span><strong>Los Aromos</strong><small>Gestión de inventario</small></span></a><div class="header-actions"><span class="header-badge">Control de stock</span><button id="cerrar-sesion" class="boton-sesion" type="button">Cerrar sesión</button></div>
     <button id="menu-toggle-stock" class="menu-toggle" type="button" aria-expanded="false" aria-controls="barra-ubicaciones" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    <div class="notificaciones"><button id="campana-notificaciones" class="campana-notificaciones" type="button" aria-label="Notificaciones" aria-expanded="false"><span aria-hidden="true">&#128276;</span><b id="notificaciones-contador" hidden>0</b></button><div id="panel-notificaciones" class="panel-notificaciones" hidden><div class="notificaciones-cabecera"><strong>Notificaciones</strong><button id="marcar-notificaciones" type="button">Marcar leídas</button></div><div id="lista-notificaciones"></div></div></div>
   </header>
 
   <main>
@@ -614,6 +615,36 @@
   <script src="/formularios.js"></script>
   <script>
     const $ = id => document.getElementById(id);
+
+    let notificaciones = [];
+    let notificacionesLeidas = new Set(JSON.parse(localStorage.getItem('stock-notificaciones-leidas') || '[]'));
+
+    async function actualizarNotificaciones() {
+      const lista = $('lista-notificaciones');
+      const contador = $('notificaciones-contador');
+      if (!lista || !contador) return;
+      const cola = await window.stockOffline?.pendientesDetalle?.() || [];
+      const bajos = productosActuales.filter(p => p.activo !== false && Number(p.stock) <= Number(p.stock_minimo));
+      notificaciones = [
+        ...bajos.map(p => ({ id: `stock-${p.id}`, tipo: 'Stock bajo', texto: `${p.nombre}: quedan ${Number(p.stock)} (mínimo ${Number(p.stock_minimo)})` })),
+        ...cola.map(item => ({ id: `offline-${item.id}`, tipo: item.estado === 'error' ? 'Movimiento con error' : 'Movimiento pendiente', texto: item.ultimoError || 'Se sincronizará cuando vuelva Internet.' })),
+      ];
+      const noLeidas = notificaciones.filter(n => !notificacionesLeidas.has(n.id)).length;
+      contador.textContent = noLeidas;
+      contador.hidden = !noLeidas;
+      lista.replaceChildren();
+      if (!notificaciones.length) {
+        const vacio = document.createElement('p'); vacio.className = 'notificaciones-vacio'; vacio.textContent = 'No hay notificaciones.'; lista.appendChild(vacio); return;
+      }
+      notificaciones.slice(0, 30).forEach(n => {
+        const item = document.createElement('button'); item.type = 'button'; item.className = `notificacion-item${notificacionesLeidas.has(n.id) ? '' : ' nueva'}`;
+        const tipo = document.createElement('strong'); tipo.textContent = n.tipo;
+        const texto = document.createElement('span'); texto.textContent = n.texto;
+        item.append(tipo, texto);
+        item.onclick = () => { notificacionesLeidas.add(n.id); localStorage.setItem('stock-notificaciones-leidas', JSON.stringify([...notificacionesLeidas])); actualizarNotificaciones(); };
+        lista.appendChild(item);
+      });
+    }
 
     let categorias = [];
     let productosActuales = [];
@@ -1025,6 +1056,7 @@
         cargarHistorial(),
       ]);
       await dibujarPendientesOffline();
+      await actualizarNotificaciones();
     }
 
     window.addEventListener('stock-offline-synced', async () => {
@@ -1494,6 +1526,27 @@
       apiKey = '';
       authToken = '';
       location.reload();
+    });
+
+    const campanaNotificaciones = $('campana-notificaciones');
+    const panelNotificaciones = $('panel-notificaciones');
+    campanaNotificaciones?.addEventListener('click', () => {
+      const abierto = campanaNotificaciones.getAttribute('aria-expanded') === 'true';
+      campanaNotificaciones.setAttribute('aria-expanded', String(!abierto));
+      if (panelNotificaciones) panelNotificaciones.hidden = abierto;
+      if (!abierto) actualizarNotificaciones();
+    });
+    $('marcar-notificaciones')?.addEventListener('click', event => {
+      event.stopPropagation();
+      notificaciones.forEach(n => notificacionesLeidas.add(n.id));
+      localStorage.setItem('stock-notificaciones-leidas', JSON.stringify([...notificacionesLeidas]));
+      actualizarNotificaciones();
+    });
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.notificaciones')) {
+        campanaNotificaciones?.setAttribute('aria-expanded', 'false');
+        if (panelNotificaciones) panelNotificaciones.hidden = true;
+      }
     });
 
     const menuStock = $('menu-toggle-stock');
