@@ -214,7 +214,7 @@
           window.dispatchEvent(new Event('stock-offline-synced'));
         }
         const restantes = await listarPendientes();
-        if (restantes.length) {
+        if (restantes.length && !errores.length) {
           const detalle = errores.length ? ` Motivo: ${errores[0]}.` : '';
           mensajeOffline(`${restantes.length} operación(es) siguen pendientes de sincronizar.${detalle}`);
         }
