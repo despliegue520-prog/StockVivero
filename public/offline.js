@@ -144,6 +144,10 @@
   window.stockOffline = {
     async request(path, options = {}) {
       if (eliminaProducto(path, options) && !navigator.onLine) throw new Error('Necesitás conexión para eliminar un producto del stock.');
+      if (esCambio(options) && !navigator.onLine) {
+        const queued = await encolar(path, options);
+        return { ok: true, status: 202, offline: true, json: async () => queued };
+      }
       try {
         const response = await enviar(path, options);
         if (response.ok && esCambio(options)) await invalidarCache();
@@ -158,7 +162,10 @@
         return response;
       } catch (err) {
         if (eliminaProducto(path, options)) throw new Error('No se pudo confirmar la eliminación. Reconectate y actualizá el listado antes de reintentar.');
-        if (esCambio(options)) return { ok: true, status: 202, offline: true, json: async () => encolar(path, options) };
+        if (esCambio(options)) {
+          const queued = await encolar(path, options);
+          return { ok: true, status: 202, offline: true, json: async () => queued };
+        }
         const cached = await desdeCache(path);
         if (cached !== null) {
           mensajeOffline('Mostrando la última información guardada en este dispositivo.');
