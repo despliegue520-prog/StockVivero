@@ -38,10 +38,12 @@ CREATE TABLE IF NOT EXISTS stock.movimientos (
   producto_id INT          NOT NULL REFERENCES stock.productos(id),
   tipo        VARCHAR(10)  NOT NULL CHECK (tipo IN ('entrada', 'salida', 'ajuste')),
   cantidad    NUMERIC(12,3) NOT NULL CHECK (cantidad <> 0),
+  origen      TEXT,
   motivo      TEXT,
   tarea_id    INT,
   creado_en   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+ALTER TABLE stock.movimientos ADD COLUMN IF NOT EXISTS origen TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_mov_producto ON stock.movimientos (producto_id);
 CREATE INDEX IF NOT EXISTS idx_mov_tarea    ON stock.movimientos (tarea_id);

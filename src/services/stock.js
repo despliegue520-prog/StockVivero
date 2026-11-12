@@ -17,7 +17,7 @@ class StockError extends Error {
  * tipo 'ajuste'  -> cantidad con signo (+ suma, - resta)
  */
 async function registrarMovimiento(
-  { producto_id, tipo, cantidad, motivo = null, tarea_id = null },
+  { producto_id, tipo, cantidad, origen = null, motivo = null, tarea_id = null },
   client = null
 ) {
   const own = !client;
@@ -35,6 +35,9 @@ async function registrarMovimiento(
     }
     if (tipo !== 'ajuste' && cant < 0) {
       throw new StockError('En entradas y salidas la cantidad debe ser positiva');
+    }
+    if (origen !== null && (typeof origen !== 'string' || origen.length > 500)) {
+      throw new StockError('El origen debe ser texto de hasta 500 caracteres');
     }
 
     // Bloquea el producto para evitar que dos descuentos simultáneos se pisen
@@ -61,10 +64,10 @@ async function registrarMovimiento(
     }
 
     const res = await db.query(
-      `INSERT INTO stock.movimientos (producto_id, tipo, cantidad, motivo, tarea_id)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO stock.movimientos (producto_id, tipo, cantidad, origen, motivo, tarea_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [producto_id, tipo, delta, motivo, tarea_id]
+      [producto_id, tipo, delta, origen === null ? null : origen.trim(), motivo, tarea_id]
     );
 
     if (own) await db.query('COMMIT');

@@ -270,8 +270,9 @@ main { margin-inline: auto; }
   #historial td:nth-child(2)::before { content: 'Producto'; }
   #historial td:nth-child(3)::before { content: 'Tipo'; }
   #historial td:nth-child(4)::before { content: 'Cantidad'; }
-  #historial td:nth-child(5)::before { content: 'Motivo'; }
-  #historial td:nth-child(6)::before { content: 'Tarea'; }
+  #historial td:nth-child(5)::before { content: 'Origen'; }
+  #historial td:nth-child(6)::before { content: 'Motivo'; }
+  #historial td:nth-child(7)::before { content: 'Tarea'; }
   #productos .vacio, #historial .vacio { display: block; text-align: center; }
   #productos .vacio::before, #historial .vacio::before { content: none; }
   #productos td.vacio::before, #historial td.vacio::before { content: none !important; display: none !important; }
