@@ -123,7 +123,7 @@ async function montarFicha(actual, ubicaciones) {
     const destinoDetalle=campo(form,'A dónde las llevan','text',destinosPlantas);
     // También permite traslados entre filas del mismo cantero.
     const destino=campo(form,'Fila de destino','text',[['','Seleccioná el destino'],...ubicaciones.filter(u=>u.tipo==='fila').map(f=>[f.id,codigo(f)])]);
-    const desdeQR=campo(form,'Enlace del QR de destino (opcional)');desdeQR.placeholder='https://stock.viverolosaromos.com.ar/canteros/I01-C01/';
+    const desdeQR=campo(form,'Enlace del QR de destino (opcional)');desdeQR.placeholder='https://controldestock.viverolosaromos.com.ar/canteros/I01-C01/';
     const aplicar=el('button','Usar enlace de destino');aplicar.type='button';form.append(aplicar);
     const escanear=el('button','Escanear QR del destino');escanear.type='button';form.append(escanear);
     escanear.onclick=async()=>{

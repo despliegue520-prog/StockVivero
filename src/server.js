@@ -25,7 +25,7 @@ app.use(express.static(publicDir));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(publicDir, 'logo.png')));
 app.get('/ejemplo-cantero-qr.svg', async (req, res, next) => {
   try {
-    const base = process.env.PUBLIC_BASE_URL || 'https://stock.viverolosaromos.com.ar';
+    const base = process.env.PUBLIC_BASE_URL || 'https://controldestock.viverolosaromos.com.ar';
     const destino = new URL('/ejemplo-cantero.html', base).toString();
     res.type('image/svg+xml').send(await QRCode.toString(destino, { type: 'svg', margin: 1, errorCorrectionLevel: 'M' }));
   } catch (err) { next(err); }

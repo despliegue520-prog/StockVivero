@@ -19,7 +19,7 @@ const server = app.listen(0, '127.0.0.1', async () => {
   const base = `http://127.0.0.1:${server.address().port}/api/ubicaciones`;
   const call = (path, options = {}) => fetch(base + path, { ...options, headers: { 'x-api-key': 'test-only', 'Content-Type': 'application/json' } });
   try {
-    process.env.PUBLIC_BASE_URL = 'https://stock.viverolosaromos.com.ar';
+    process.env.PUBLIC_BASE_URL = 'https://controldestock.viverolosaromos.com.ar';
     assert.equal((await fetch(base)).status, 401);
     assert.equal((await call('')).status, 200);
     const config = await (await call('/config')).json();

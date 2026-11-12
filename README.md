@@ -38,7 +38,7 @@ Ejemplo de salida ligada a una tarea del planificador:
 
 ## Ubicaciones y etiquetas QR
 
-Configurar `PUBLIC_BASE_URL=https://stock.viverolosaromos.com.ar` en el entorno local y en Render. Ejecutar `npm run migrate` y reiniciar el servidor. Abrir `/invernaderos/` para crear canteros y filas, o `/etiquetas/` para seleccionar etiquetas de ubicaciones y categorias, descargar SVG e imprimir una hoja o guardar PDF.
+Configurar `PUBLIC_BASE_URL=https://controldestock.viverolosaromos.com.ar` en el entorno local y en Render. Ejecutar `npm run migrate` y reiniciar el servidor. Abrir `/invernaderos/` para crear canteros y filas, o `/etiquetas/` para seleccionar etiquetas de ubicaciones y categorias, descargar SVG e imprimir una hoja o guardar PDF.
 
 Los codigos y las rutas son permanentes; solo el nombre visible se puede editar. Los QR usan exclusivamente PUBLIC_BASE_URL. Las fichas y los QR no ejecutan movimientos; los datos y la generacion QR conservan la proteccion de API key. Las etiquetas no incluyen credenciales. No hay soporte sin conexion ni cola de sincronizacion. Las fichas permiten relevar capacidades y registrar movimientos de plantas; lo pendiente figura como Sin relevar.
 
