@@ -46,9 +46,10 @@ main { max-width: 1240px; padding: 2.5rem 1.25rem 5rem; gap: 1.5rem; }
 .barra-ubicaciones { gap: .6rem !important; }
 .barra-ubicaciones a { border: 1px solid #d8e5d7; border-radius: 9px; background: #fff; color: var(--premium-forest); padding: .55rem .8rem; font-size: .77rem; font-weight: 700; text-decoration: none; box-shadow: 0 3px 9px #1c55300b; transition: transform .2s, border-color .2s, background .2s; }
 .barra-ubicaciones a:hover { border-color: #9cbd9e; background: var(--premium-mint); transform: translateY(-2px); }
-.header-actions { position: absolute; top: 50%; right: 5.8rem; display: flex; gap: .6rem; transform: translateY(-50%); }
+.header-actions { position: absolute; top: 50%; right: 8.5rem; display: flex; gap: .6rem; transform: translateY(-50%); }
 .header-actions .boton-sesion { display: block; }
 .header-actions .header-badge { display: none; }
+.header-actions .boton-sesion { white-space: nowrap; }
 .barra-ubicaciones .enlace-cerrar-sesion { display: none !important; }
 .barra-ubicaciones .enlace-cerrar-sesion { border: 1px solid #e7c0b3; border-radius: 9px; background: #fff8f5; color: #a33b20; padding: .55rem .8rem; font-size: .77rem; font-weight: 700; box-shadow: 0 3px 9px #1c55300b; }
 .barra-ubicaciones .enlace-cerrar-sesion:hover { background: #ffe9e1; border-color: #d99c89; filter: none; }
@@ -218,7 +219,7 @@ main { margin-inline: auto; }
 .menu-toggle[aria-expanded="true"]::after { content: 'Cerrar'; font-size: .76rem; font-weight: 750; }
 @media (max-width: 700px) {
   header > .menu-toggle { display: grid; flex: 0 0 auto; }
-  .header-actions { right: 8rem; }
+  .header-actions { right: 8.8rem; }
   .header-actions .boton-sesion { min-height: 38px; padding: .45rem .65rem; font-size: .7rem; }
   main > .barra-ubicaciones { display: none !important; }
   main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: auto; right: .75rem; width: min(320px, calc(100vw - 1.5rem)); z-index: 30; display: grid !important; gap: 0 !important; padding: .45rem .65rem; border: 1px solid #dce4dd; border-radius: 12px; background: #fff; box-shadow: 0 14px 30px #142f2930; }
