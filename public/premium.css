@@ -203,8 +203,10 @@ main { margin-inline: auto; }
 }
 
 /* Menú hamburguesa para la navegación secundaria en móvil. */
-.menu-toggle { display: none; place-items: center; gap: 4px; width: 38px; height: 38px; padding: .55rem; border: 1px solid #ffffff32; border-radius: 50%; background: #ffffff12; color: #fff; cursor: pointer; }
-.menu-toggle span { display: block; width: 14px; height: 1.8px; border-radius: 999px; background: currentColor; transition: transform .2s, opacity .2s; }
+.menu-toggle { display: none; place-items: center; gap: 4px; width: 42px; height: 38px; padding: .55rem; border: 1px solid #ffffff32; border-radius: 11px; background: #ffffff12; color: #fff; cursor: pointer; }
+.menu-toggle span { display: block; height: 2px; border-radius: 999px; background: currentColor; transition: transform .2s, opacity .2s, width .2s; }
+.menu-toggle span:nth-child(1), .menu-toggle span:nth-child(3) { width: 14px; }
+.menu-toggle span:nth-child(2) { width: 19px; }
 .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
@@ -214,9 +216,10 @@ main { margin-inline: auto; }
 @media (max-width: 700px) {
   header > .menu-toggle { display: grid; flex: 0 0 auto; }
   main > .barra-ubicaciones { display: none !important; }
-  main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: .75rem; right: .75rem; z-index: 30; display: grid !important; gap: .25rem !important; padding: .55rem; border: 1px solid #dce4dd; border-radius: 14px; background: #fff; box-shadow: 0 16px 35px #142f2930; }
-  main > .barra-ubicaciones.menu-abierto a, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { display: flex; align-items: center; min-height: 42px; padding: .75rem .8rem; border-radius: 9px; color: #214f42; font-size: .84rem; font-weight: 700; }
-  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion:hover { background: #edf3ee; }
+  main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: .75rem; right: .75rem; z-index: 30; display: grid !important; gap: .45rem !important; padding: .7rem; border: 1px solid #dce4dd; border-radius: 16px; background: #f7faf7; box-shadow: 0 16px 35px #142f2930; }
+  main > .barra-ubicaciones.menu-abierto a, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: .75rem .9rem; border: 1px solid #dce8dc; border-radius: 11px; background: #fff; color: #214f42; font-size: .84rem; font-weight: 700; box-shadow: 0 2px 6px #214f420b; }
+  main > .barra-ubicaciones.menu-abierto a::after { content: '›'; color: #91a395; font-size: 1.3rem; line-height: 1; }
+  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion:hover { background: #edf3ee; border-color: #aec9b0; }
 }
 
 /* Layout táctil para tablets y teléfonos. */
