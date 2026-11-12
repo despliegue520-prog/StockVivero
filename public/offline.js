@@ -182,21 +182,30 @@
         const cola = await listarPendientes();
         if (!cola.length || !navigator.onLine) { await actualizarIndicador(); return; }
         let sincronizadas = 0;
+        const errores = [];
         for (const item of cola.sort((a, b) => a.creado - b.creado)) {
           try {
             const response = await enviar(item.path, item.options);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) {
+              const detalle = await response.clone().json().catch(() => ({}));
+              throw new Error(detalle.error || `HTTP ${response.status}`);
+            }
             await transaccion(QUEUE_STORE, 'readwrite', store => store.delete(item.id));
             sincronizadas++;
-          } catch {
+          } catch (error) {
             item.intentos = (item.intentos || 0) + 1;
             item.ultimoIntento = Date.now();
+            item.ultimoError = error.message;
             await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
+            errores.push(error.message);
           }
         }
         if (sincronizadas) await invalidarCache();
         const restantes = await listarPendientes();
-        if (restantes.length) mensajeOffline(`${restantes.length} operación(es) siguen pendientes de sincronizar.`);
+        if (restantes.length) {
+          const detalle = errores.length ? ` Motivo: ${errores[0]}.` : '';
+          mensajeOffline(`${restantes.length} operación(es) siguen pendientes de sincronizar.${detalle}`);
+        }
         else if (sincronizadas) mensajeOffline('Todo sincronizado correctamente.');
         await actualizarIndicador();
       } finally {
@@ -215,5 +224,8 @@
     await abrirDB().catch(() => {});
     await actualizarIndicador();
     window.stockOffline.sincronizar();
+    window.setInterval(() => {
+      if (navigator.onLine) window.stockOffline.sincronizar();
+    }, 15000);
   });
 })();
