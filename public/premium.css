@@ -415,6 +415,12 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 .notificacion-item strong { font-size: .75rem; color: #24583e; }
 .notificacion-item span { font-size: .76rem; overflow-wrap: anywhere; }
 .notificaciones-vacio { margin: .8rem .3rem; color: #718075; font-size: .8rem; }
+@media (max-width: 700px) {
+  header { grid-template-columns: minmax(0, 1fr) auto auto auto; gap: .45rem; }
+  .header-actions { grid-column: 2; right: auto; }
+  header > .menu-toggle { grid-column: 3; }
+  header > .notificaciones { grid-column: 4; }
+}
 
 /* Pulido visual de la pantalla principal */
 main { isolation: isolate; }
@@ -423,6 +429,9 @@ main { isolation: isolate; }
 .bienvenida > * { position: relative; z-index: 1; }
 .bienvenida h1 { color: #193c2c !important; }
 .bienvenida .intro { color: #5d6b61 !important; }
+header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 1rem; }
+.header-actions { position: static; grid-column: 2; transform: none; }
+.notificaciones { grid-column: 3; }
 .pestanas button { transition: background .18s, color .18s, transform .18s; }
 .pestanas button:not([aria-current]):hover { transform: translateY(-1px); }
 .contexto { box-shadow: 0 4px 16px #214f4208; }
