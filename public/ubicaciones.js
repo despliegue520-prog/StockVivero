@@ -70,6 +70,10 @@ async function iniciar() {
   const corto = ruta.match(/^\/canteros\/(I[0-9]{2,3})-(C[0-9]{2,3})\/$/);
   const buscada = corto ? '/invernaderos/'+corto[1]+'/canteros/'+corto[2]+'/' : ruta;
   const actual = ubicaciones.find(u => u.ruta === buscada);
+  if (actual && (actual.tipo === 'cantero' || actual.tipo === 'fila')) {
+    document.getElementById('nav-ubicaciones')?.remove();
+    document.querySelector('.encabezado-seccion')?.remove();
+  }
   if (!etiquetas && ruta !== '/invernaderos/' && !actual) throw new Error('Ubicación no encontrada. El código debe registrarse antes de imprimir su QR.');
   $('titulo').textContent = etiquetas ? 'Etiquetas QR' : actual ? actual.nombre : 'Invernaderos';
   if (etiquetas) {
