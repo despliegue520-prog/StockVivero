@@ -91,6 +91,7 @@ router.get('/alertas/bajo-stock', async (req, res, next) => {
       `SELECT s.*, p.datos
        FROM stock.stock_actual s JOIN stock.productos p USING (id)
        WHERE s.activo
+         AND s.stock_minimo > 0
          AND s.stock <= s.stock_minimo
          AND ($1::text IS NULL OR categoria = $1)
          AND ($2::text IS NULL OR area = $2)

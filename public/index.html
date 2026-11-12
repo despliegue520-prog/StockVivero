@@ -624,7 +624,7 @@
       const contador = $('notificaciones-contador');
       if (!lista || !contador) return;
       const cola = await window.stockOffline?.pendientesDetalle?.() || [];
-      const bajos = productosActuales.filter(p => p.activo !== false && Number(p.stock) <= Number(p.stock_minimo));
+      const bajos = productosActuales.filter(p => p.activo !== false && Number(p.stock_minimo) > 0 && Number(p.stock) <= Number(p.stock_minimo));
       notificaciones = [
         ...bajos.map(p => ({ id: `stock-${p.id}`, productoId: p.id, tipo: 'Stock bajo', texto: `${p.nombre}: quedan ${Number(p.stock)} (mínimo ${Number(p.stock_minimo)})` })),
         ...cola.map(item => ({ id: `offline-${item.id}`, tipo: item.estado === 'error' ? 'Movimiento con error' : 'Movimiento pendiente', texto: item.ultimoError || 'Se sincronizará cuando vuelva Internet.' })),
@@ -796,7 +796,7 @@
       const lista = $('lista-alertas-stock');
       if (!panel || !lista) return;
       const bajos = productosActuales
-        .filter(p => p.activo !== false && Number(p.stock) <= Number(p.stock_minimo))
+        .filter(p => p.activo !== false && Number(p.stock_minimo) > 0 && Number(p.stock) <= Number(p.stock_minimo))
         .sort((a, b) => Number(a.stock) - Number(b.stock));
       lista.replaceChildren();
       panel.hidden = !bajos.length;
@@ -824,7 +824,7 @@
           .toLocaleLowerCase('es')
           .includes(busqueda);
 
-        const bajo = p.activo &&
+        const bajo = p.activo && Number(p.stock_minimo) > 0 &&
           Number(p.stock) <= Number(p.stock_minimo);
 
         return p.activo !== false && coincide && (!$('solo-bajo').checked || bajo);
@@ -837,7 +837,7 @@
         productos.length + ' productos';
 
       $('total-productos').textContent = productosActuales.filter(p => p.activo !== false).length;
-      $('total-bajos').textContent = productosActuales.filter(p => p.activo && Number(p.stock) <= Number(p.stock_minimo)).length;
+      $('total-bajos').textContent = productosActuales.filter(p => p.activo && Number(p.stock_minimo) > 0 && Number(p.stock) <= Number(p.stock_minimo)).length;
       dibujarAlertasStock();
       if (!productos.length) {
         const tr = fila([{ texto: 'No hay productos para estos filtros.', clase: 'vacio' }]);
@@ -845,7 +845,7 @@
         $('productos').appendChild(tr);
       }
       productos.forEach(p => {
-        const bajo =
+        const bajo = Number(p.stock_minimo) > 0 &&
           Number(p.stock) <= Number(p.stock_minimo);
 
         const categoria = categorias.find(
