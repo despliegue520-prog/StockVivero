@@ -379,7 +379,7 @@
 
   <main>
     <div class="bienvenida"><div><p class="eyebrow">INVENTARIO DEL VIVERO</p><h1>Todo tu stock, en un lugar.</h1><p class="intro">Consultá productos, organizá categorías y registrá cada movimiento.</p></div><button id="actualizar" class="secundario" type="button">↻ Actualizar</button></div>
-    <nav id="barra-ubicaciones" class="barra-ubicaciones" aria-label="Enlaces rápidos"><a href="/invernaderos/">Invernaderos y ubicaciones</a><a href="/etiquetas/">Etiquetas QR</a><a href="/ejemplo-cantero.html">Ver cantero de ejemplo</a></nav>
+    <nav id="barra-ubicaciones" class="barra-ubicaciones" aria-label="Enlaces rápidos"><a href="/invernaderos/">Invernaderos y ubicaciones</a><a href="/etiquetas/">Etiquetas QR</a><a href="/ejemplo-cantero.html">Ver cantero de ejemplo</a><button id="cerrar-sesion-menu" class="enlace-cerrar-sesion" type="button">Cerrar sesión</button></nav>
     <nav class="pestanas" aria-label="Secciones del inventario">
       <button type="button" data-vista="productos" aria-current="page">Productos</button>
       <button type="button" data-vista="movimientos">Movimientos</button>
@@ -1526,6 +1526,7 @@
       $('cancelar-cierre').focus();
     }
     $('cerrar-sesion').addEventListener('click', abrirModalSesion);
+    $('cerrar-sesion-menu').addEventListener('click', abrirModalSesion);
     $('cancelar-cierre').addEventListener('click', cerrarModalSesion);
     $('cancelar-cierre-x').addEventListener('click', cerrarModalSesion);
     modalCerrarSesion.addEventListener('click', event => {

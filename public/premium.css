@@ -46,6 +46,9 @@ main { max-width: 1240px; padding: 2.5rem 1.25rem 5rem; gap: 1.5rem; }
 .barra-ubicaciones { gap: .6rem !important; }
 .barra-ubicaciones a { border: 1px solid #d8e5d7; border-radius: 9px; background: #fff; color: var(--premium-forest); padding: .55rem .8rem; font-size: .77rem; font-weight: 700; text-decoration: none; box-shadow: 0 3px 9px #1c55300b; transition: transform .2s, border-color .2s, background .2s; }
 .barra-ubicaciones a:hover { border-color: #9cbd9e; background: var(--premium-mint); transform: translateY(-2px); }
+.header-actions .boton-sesion { display: none; }
+.barra-ubicaciones .enlace-cerrar-sesion { border: 1px solid #e7c0b3; border-radius: 9px; background: #fff8f5; color: #a33b20; padding: .55rem .8rem; font-size: .77rem; font-weight: 700; box-shadow: 0 3px 9px #1c55300b; }
+.barra-ubicaciones .enlace-cerrar-sesion:hover { background: #ffe9e1; border-color: #d99c89; filter: none; }
 
 .pestanas { border: 1px solid #dce6dc; border-radius: 14px; background: #fff; padding: .4rem; box-shadow: 0 5px 18px #1d54300b; }
 .pestanas button { border-radius: 10px; color: #718075; font-size: .82rem; font-weight: 750; }
@@ -133,8 +136,9 @@ tbody tr:hover { background: #f8fbf7; }
   .bienvenida .secundario { width: 100%; }
 
   .barra-ubicaciones { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .barra-ubicaciones a { min-height: 42px; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .barra-ubicaciones a, .barra-ubicaciones .enlace-cerrar-sesion { min-height: 42px; display: flex; align-items: center; justify-content: center; text-align: center; }
   .barra-ubicaciones a:last-child { grid-column: 1 / -1; }
+  .barra-ubicaciones .enlace-cerrar-sesion { grid-column: 1 / -1; }
 
   .pestanas { scrollbar-width: thin; }
   .pestanas button { min-height: 40px; }
@@ -170,6 +174,7 @@ tbody tr:hover { background: #f8fbf7; }
   .bienvenida .intro { font-size: .82rem; }
   .barra-ubicaciones { grid-template-columns: 1fr !important; }
   .barra-ubicaciones a:last-child { grid-column: auto; }
+  .barra-ubicaciones .enlace-cerrar-sesion { grid-column: auto; }
   .pestanas { margin-inline: -.1rem; }
   .pestanas button { padding-inline: .7rem; font-size: .75rem; }
   .indicadores { grid-template-columns: 1fr; }
@@ -207,8 +212,8 @@ main { margin-inline: auto; }
   header > .menu-toggle { display: grid; flex: 0 0 auto; }
   main > .barra-ubicaciones { display: none !important; }
   main > .barra-ubicaciones.menu-abierto { position: fixed; top: 76px; left: .75rem; right: .75rem; z-index: 30; display: grid !important; gap: .25rem !important; padding: .55rem; border: 1px solid #dce4dd; border-radius: 14px; background: #fff; box-shadow: 0 16px 35px #142f2930; }
-  main > .barra-ubicaciones.menu-abierto a { display: flex; align-items: center; min-height: 42px; padding: .75rem .8rem; border-radius: 9px; color: #214f42; font-size: .84rem; font-weight: 700; }
-  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible { background: #edf3ee; }
+  main > .barra-ubicaciones.menu-abierto a, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion { display: flex; align-items: center; min-height: 42px; padding: .75rem .8rem; border-radius: 9px; color: #214f42; font-size: .84rem; font-weight: 700; }
+  main > .barra-ubicaciones.menu-abierto a:hover, main > .barra-ubicaciones.menu-abierto a:focus-visible, main > .barra-ubicaciones.menu-abierto .enlace-cerrar-sesion:hover { background: #edf3ee; }
 }
 
 /* Layout táctil para tablets y teléfonos. */
