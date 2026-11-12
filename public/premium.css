@@ -409,6 +409,22 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 .notificacion-item strong { font-size: .75rem; color: #24583e; }
 .notificacion-item span { font-size: .76rem; overflow-wrap: anywhere; }
 .notificaciones-vacio { margin: .8rem .3rem; color: #718075; font-size: .8rem; }
+
+/* Pulido visual de la pantalla principal */
+main { isolation: isolate; }
+.bienvenida { position: relative; overflow: hidden; border: 1px solid #dbe7dc; background: linear-gradient(135deg, #ffffff 0%, #f4faf3 100%); box-shadow: 0 8px 24px #214f420b; }
+.bienvenida::after { content: ''; position: absolute; right: -4rem; bottom: -5rem; width: 15rem; height: 15rem; border-radius: 50%; background: #dcefdc80; pointer-events: none; }
+.bienvenida > * { position: relative; z-index: 1; }
+.pestanas button { transition: background .18s, color .18s, transform .18s; }
+.pestanas button:not([aria-current]):hover { transform: translateY(-1px); }
+.contexto { box-shadow: 0 4px 16px #214f4208; }
+.indicadores div { transition: transform .18s, box-shadow .18s, border-color .18s; }
+.indicadores div:hover { transform: translateY(-2px); border-color: #b9d2ba; box-shadow: 0 8px 20px #214f4212; }
+section[data-panel="productos"] { border-top: 3px solid #dcebdc; }
+.filtros { border-bottom: 1px solid #e5ede5; }
+.tabla { overflow: auto; background: #fff; }
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: #f4f9f3; }
 @media (max-width: 600px) {
   .pendiente-offline-item { grid-template-columns: 1fr; gap: .35rem; }
   .pendiente-offline-item > span:last-child { display: flex; gap: .4rem; }
