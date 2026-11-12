@@ -390,6 +390,10 @@
     <div class="contexto" id="contexto"><label>Ver categoría<select id="filtro-categoria"><option value="">Todas las categorías</option></select></label><label>Ver área<select id="filtro-area"><option value="">Todas las áreas</option></select></label><div class="selector-categoria-movil"><button id="filtro-categoria-boton" type="button" aria-expanded="false" aria-controls="filtro-categoria-menu">Todas las categorías</button><div id="filtro-categoria-menu" class="selector-categoria-menu" hidden></div></div><span id="contexto-texto">Inventario completo</span></div>
     <div class="indicadores" id="indicadores" aria-label="Resumen del inventario"><div><span>Productos</span><strong id="total-productos">—</strong></div><div><span>Con stock bajo</span><strong id="total-bajos">—</strong></div><div><span>Categorías disponibles</span><strong id="total-categorias">—</strong></div></div>
     <p id="msg" role="status" aria-live="polite"></p>
+    <section id="alertas-stock" class="alertas-stock" data-panel="productos" hidden aria-labelledby="h-alertas-stock">
+      <h2 id="h-alertas-stock">Alertas de stock</h2>
+      <div id="lista-alertas-stock"></div>
+    </section>
 
     <nav id="submovimientos" class="subpestanas" aria-label="Movimientos" hidden>
       <button type="button" data-movista="historial" aria-current="page">Historial</button>
@@ -741,6 +745,28 @@
       return acciones;
     }
 
+    function dibujarAlertasStock() {
+      const panel = $('alertas-stock');
+      const lista = $('lista-alertas-stock');
+      if (!panel || !lista) return;
+      const bajos = productosActuales
+        .filter(p => p.activo !== false && Number(p.stock) <= Number(p.stock_minimo))
+        .sort((a, b) => Number(a.stock) - Number(b.stock));
+      lista.replaceChildren();
+      panel.hidden = !bajos.length;
+      bajos.forEach(producto => {
+        const item = document.createElement('div');
+        item.className = 'alerta-stock-item';
+        const texto = document.createElement('span');
+        texto.textContent = `${producto.nombre} · quedan ${Number(producto.stock)} · mínimo ${Number(producto.stock_minimo)}`;
+        const editar = document.createElement('button');
+        editar.type = 'button'; editar.className = 'secundario'; editar.textContent = 'Editar mínimo';
+        editar.onclick = () => iniciarEdicionProducto(Number(producto.id));
+        item.append(texto, editar);
+        lista.appendChild(item);
+      });
+    }
+
     function dibujarProductos() {
       const busqueda = $('buscar')
         .value
@@ -766,6 +792,7 @@
 
       $('total-productos').textContent = productosActuales.filter(p => p.activo !== false).length;
       $('total-bajos').textContent = productosActuales.filter(p => p.activo && Number(p.stock) <= Number(p.stock_minimo)).length;
+      dibujarAlertasStock();
       if (!productos.length) {
         const tr = fila([{ texto: 'No hay productos para estos filtros.', clase: 'vacio' }]);
         tr.firstChild.colSpan = 8;
