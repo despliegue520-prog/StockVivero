@@ -8,7 +8,7 @@ function baseUrl() {
   const raw = process.env.PUBLIC_BASE_URL || 'https://controldestock.viverolosaromos.com.ar';
   if (!raw) throw Object.assign(new Error('Configurá PUBLIC_BASE_URL para generar QR'), { status: 503 });
   const url = new URL(raw);
-  if (url.protocol !== 'https:' || isIP(url.hostname.replace(/^\[|\]$/g, '')) || url.hostname === 'localhost' || url.hostname.endsWith('.localhost') || url.hostname.endsWith('.local') || url.hostname.endsWith('.onrender.com') || url.pathname !== '/' || url.search || url.hash || url.username || url.password) {
+  if (url.protocol !== 'https:' || isIP(url.hostname.replace(/^\[|\]$/g, '')) || url.hostname === 'localhost' || url.hostname.endsWith('.localhost') || url.hostname.endsWith('.local') || url.pathname !== '/' || url.search || url.hash || url.username || url.password) {
     throw Object.assign(new Error('PUBLIC_BASE_URL debe ser el dominio propio HTTPS, sin rutas ni credenciales'), { status: 503 });
   }
   return url.origin;

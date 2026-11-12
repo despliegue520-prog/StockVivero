@@ -37,7 +37,8 @@ const server = app.listen(0, '127.0.0.1', async () => {
     process.env.PUBLIC_BASE_URL = 'http://localhost:3001';
     assert.equal((await call('/qr?ruta=%2Fmacetas%2F')).status, 503);
     delete process.env.PUBLIC_BASE_URL;
-    assert.equal((await call('/config')).status, 503);
+    const defaultConfig = await (await call('/config')).json();
+    assert.equal(defaultConfig.base_url, 'https://controldestock.viverolosaromos.com.ar');
     console.log('OK: API key, QR SVG/PNG, dominio propio, rutas registradas y renombrado permanente.');
   } catch (err) { console.error(err); process.exitCode = 1; }
   finally { server.close(); await pool.end(); }
