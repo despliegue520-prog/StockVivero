@@ -208,6 +208,9 @@ main { margin-inline: auto; }
 .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.menu-toggle[aria-expanded="true"] { width: auto; padding-inline: .75rem; border-radius: 10px; }
+.menu-toggle[aria-expanded="true"] span { display: none; }
+.menu-toggle[aria-expanded="true"]::after { content: 'Cerrar'; font-size: .76rem; font-weight: 750; }
 @media (max-width: 700px) {
   header > .menu-toggle { display: grid; flex: 0 0 auto; }
   main > .barra-ubicaciones { display: none !important; }
