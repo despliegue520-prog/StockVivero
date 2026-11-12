@@ -129,6 +129,7 @@
     const item = { id: crypto.randomUUID(), path, options: opcionesSinCredenciales(options), creado: Date.now(), intentos: 0 };
     await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
     mensajeOffline('Guardado sin conexión. Se sincronizará cuando vuelva Internet.');
+    mensajeOffline('Guardado sin conexion. Se subira cuando vuelva Internet.');
     return { queued: true, offline: true };
   }
 
@@ -201,6 +202,10 @@
           }
         }
         if (sincronizadas) await invalidarCache();
+        if (sincronizadas) {
+          mensajeOffline('Movimiento subido correctamente. Ya esta disponible en el historial.');
+          window.dispatchEvent(new Event('stock-offline-synced'));
+        }
         const restantes = await listarPendientes();
         if (restantes.length) {
           const detalle = errores.length ? ` Motivo: ${errores[0]}.` : '';

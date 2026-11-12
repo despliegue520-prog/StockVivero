@@ -690,6 +690,8 @@
 
       const data = await res.json().catch(() => ({}));
 
+      if (res.offline && data && typeof data === 'object') data.offline = true;
+
       if (!res.ok) {
         throw new Error(data.error || 'Error ' + res.status);
       }
@@ -960,6 +962,10 @@
       ]);
     }
 
+    window.addEventListener('stock-offline-synced', () => {
+      refrescar().catch(error => mensaje(error.message, 'error'));
+    });
+
 
     const camposCategoria = {
       agroquimicos: ['Tipo de producto','Principio activo','Concentracion','Banda de toxicidad','Presentacion','Contenido del envase','Unidad del envase'],
@@ -1142,14 +1148,19 @@
       datos.motivo = datos.motivo || null;
 
       try {
-        await api('/movimientos', {
+        const resultado = await api('/movimientos', {
           method: 'POST',
           body: JSON.stringify(datos),
         });
 
         event.target.reset();
 
-        mensaje('Movimiento registrado', 'ok');
+        mensaje(
+          resultado?.offline
+            ? 'Movimiento guardado sin conexión. Se subirá automáticamente cuando vuelva Internet.'
+            : 'Movimiento registrado',
+          'ok'
+        );
 
         await refrescar();
       } catch (err) {
