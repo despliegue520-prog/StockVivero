@@ -10,6 +10,7 @@ const productos = require('./routes/productos');
 const movimientos = require('./routes/movimientos');
 const tareas = require('./routes/tareas');
 const categorias = require('./categorias');
+const areas = require('./areas');
 const { buscarUsuario, validarPassword, crearToken, autenticar } = require('./auth');
 
 const ubicaciones = require('./routes/ubicaciones');
@@ -100,12 +101,86 @@ app.use((req, res, next) => {
 app.get('/categorias', (req, res) => {
   res.json(categorias);
 });
+app.get('/areas', (req, res) => {
+  res.json(areas);
+});
 
 app.use('/api/ubicaciones', ubicaciones);
 app.use('/api/plantas', require('./routes/plantas'));
 app.use('/productos', productos);
 app.use('/movimientos', movimientos);
 app.use('/tareas', tareas);
+
+// Interpreta consultas de producción para la calculadora de stock.
+app.post('/api/produccion/interpretar', async (req, res) => {
+  const consulta = typeof req.body?.consulta === 'string'
+    ? req.body.consulta.trim()
+    : '';
+
+  if (!consulta || consulta.length > 500) {
+    return res.status(400).json({ error: 'Escribí una consulta de hasta 500 caracteres.' });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(503).json({ error: 'La consulta con IA todavía no está configurada.' });
+  }
+
+  const properties = {
+    variedad: { type: ['string', 'null'] },
+    etapa: { type: ['string', 'null'] },
+    cantidad_plantas: { type: ['integer', 'null'] },
+    maceta_litros: { type: ['number', 'null'] },
+  };
+
+  try {
+    const modelo = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+    const solicitud = {
+      systemInstruction: {
+        parts: [{ text: 'Extraé los datos de la consulta de producción. Usá null si un dato falta o es ambiguo. Convertí el volumen de la maceta a litros.' }],
+      },
+      contents: [{ parts: [{ text: consulta }] }],
+      generationConfig: {
+        responseFormat: {
+          text: {
+            mimeType: 'APPLICATION_JSON',
+            schema: { type: 'object', properties, required: Object.keys(properties) },
+          },
+        },
+      },
+    };
+    let respuesta;
+    for (let intento = 1; intento <= 2; intento++) {
+      respuesta = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+          signal: AbortSignal.timeout(12000),
+          body: JSON.stringify(solicitud),
+        }
+      );
+      if (respuesta.ok) break;
+      const detalle = await respuesta.text();
+      console.error(`Gemini respondió HTTP ${respuesta.status} (intento ${intento}): ${detalle.slice(0, 500)}`);
+      if (![429, 500, 502, 503, 504].includes(respuesta.status) || intento === 2) {
+        return res.status(502).json({ error: 'Gemini no pudo procesar la consulta.' });
+      }
+    }
+
+    const datos = await respuesta.json();
+    const texto = datos.candidates?.[0]?.content?.parts?.find(
+      parte => typeof parte.text === 'string' && !parte.thought
+    )?.text;
+
+    if (!texto) throw new Error('Gemini no devolvió una respuesta estructurada');
+
+    return res.json(JSON.parse(texto));
+  } catch (error) {
+    console.error('Error interpretando producción con Gemini:', error.message);
+    return res.status(502).json({ error: 'No se pudo interpretar la consulta. Intentá nuevamente.' });
+  }
+});
 
 app.use((req, res) => {
   res.status(404).json({

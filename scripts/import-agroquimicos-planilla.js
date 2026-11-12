@@ -73,6 +73,18 @@ async function main() {
         AND nombre_producto IS NOT NULL AND btrim(nombre_producto) <> ''
     `);
     sinVincular = pendientes.rows[0].cantidad;
+
+    const invalidos = await client.query(`
+      SELECT count(*)::int AS cantidad
+      FROM orden_trabajo_productos otp
+      LEFT JOIN stock.productos p ON p.id = otp.stock_producto_id
+      WHERE otp.stock_producto_id IS NOT NULL
+        AND (p.id IS NULL OR p.categoria <> 'agroquimicos')
+    `);
+    if (invalidos.rows[0].cantidad > 0) {
+      throw new Error(`Hay ${invalidos.rows[0].cantidad} vínculos stock_producto_id inválidos`);
+    }
+
     await client.query('COMMIT');
     console.log(JSON.stringify({ nombres: nombres.length, creados, vinculados, sinVincular }));
   } catch (error) {

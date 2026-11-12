@@ -16,11 +16,20 @@ ALTER TABLE stock.productos
   ADD COLUMN IF NOT EXISTS categoria
   VARCHAR(40) NOT NULL DEFAULT 'general';
 
+ALTER TABLE stock.productos
+  ADD COLUMN IF NOT EXISTS area
+  VARCHAR(40) NOT NULL DEFAULT 'general';
+
 ALTER TABLE stock.productos ADD COLUMN IF NOT EXISTS datos JSONB NOT NULL DEFAULT '{}'::jsonb;
 
 CREATE INDEX IF NOT EXISTS idx_productos_categoria
   ON stock.productos (categoria);
+CREATE INDEX IF NOT EXISTS idx_productos_area
+  ON stock.productos (area);
 
+-- Vinculo estable con los productos seleccionados desde planilla-obra.
+-- La tabla pertenece al planificador y puede no existir en instalaciones
+-- independientes de Stock; por eso la integración es condicional.
 -- Entrada: positiva.
 -- Salida: negativa.
 -- Ajuste: positivo o negativo.
@@ -37,18 +46,9 @@ CREATE TABLE IF NOT EXISTS stock.movimientos (
 CREATE INDEX IF NOT EXISTS idx_mov_producto ON stock.movimientos (producto_id);
 CREATE INDEX IF NOT EXISTS idx_mov_tarea    ON stock.movimientos (tarea_id);
 
--- Conservar columnas adicionales de instalaciones existentes.
-DO $$
-BEGIN
-IF NOT EXISTS (
-  SELECT 1
-  FROM information_schema.columns
-  WHERE table_schema = 'stock'
-    AND table_name = 'stock_actual'
-    AND column_name = 'categoria'
-) THEN
-EXECUTE $view$
-CREATE OR REPLACE VIEW stock.stock_actual AS
+-- Vista derivada del stock actual.
+DROP VIEW IF EXISTS stock.stock_actual;
+CREATE VIEW stock.stock_actual AS
 SELECT
   p.id,
   p.codigo,
@@ -57,14 +57,12 @@ SELECT
   p.stock_minimo,
   p.activo,
   COALESCE(SUM(m.cantidad), 0) AS stock,
-  p.categoria
+  p.categoria,
+  p.area
 FROM stock.productos p
 LEFT JOIN stock.movimientos m ON m.producto_id = p.id
 GROUP BY p.id
-$view$;
-END IF;
-END;
-$$;
+;
 
 -- Identificadores de ubicacion permanentes: no se renombran ni eliminan.
 CREATE TABLE IF NOT EXISTS stock.ubicaciones (

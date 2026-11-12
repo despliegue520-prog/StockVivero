@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const pool = require('../db');
 const categorias = require('../categorias');
+const areas = require('../areas');
 
 const router = express.Router();
 
@@ -8,6 +9,7 @@ router.use((req, res, next) => {
   const categoria = req.method === 'GET'
     ? req.query.categoria
     : req.body?.categoria;
+  const area = req.method === 'GET' ? req.query.area : req.body?.area;
 
   if (
     categoria !== undefined &&
@@ -16,6 +18,9 @@ router.use((req, res, next) => {
     return res.status(400).json({
       error: 'Categoría inválida',
     });
+  }
+  if (area !== undefined && !areas.some(a => a.slug === area)) {
+    return res.status(400).json({ error: 'Área inválida' });
   }
 
   if (req.method === 'POST' || req.method === 'PUT') {
@@ -68,8 +73,9 @@ router.get('/', async (req, res, next) => {
       `SELECT s.*, p.datos
        FROM stock.stock_actual s JOIN stock.productos p USING (id)
        WHERE s.activo AND ($1::text IS NULL OR s.categoria = $1)
+         AND ($2::text IS NULL OR s.area = $2)
        ORDER BY s.nombre`,
-      [req.query.categoria || null]
+      [req.query.categoria || null, req.query.area || null]
     );
 
     res.json(rows);
@@ -87,8 +93,9 @@ router.get('/alertas/bajo-stock', async (req, res, next) => {
        WHERE s.activo
          AND s.stock <= s.stock_minimo
          AND ($1::text IS NULL OR categoria = $1)
+         AND ($2::text IS NULL OR area = $2)
        ORDER BY nombre`,
-      [req.query.categoria || null]
+      [req.query.categoria || null, req.query.area || null]
     );
 
     res.json(rows);
@@ -126,6 +133,7 @@ router.post('/', async (req, res, next) => {
       unidad = 'unidad',
       stock_minimo = 0,
       categoria = 'general',
+      area = 'general',
       datos = {},
     } = req.body;
 
@@ -142,11 +150,12 @@ router.post('/', async (req, res, next) => {
          unidad,
          stock_minimo,
          categoria,
+         area,
          datos
        )
-       VALUES ($1, $2, $3, $4, $5, $6)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [codigo, nombre, unidad, stock_minimo, categoria, JSON.stringify(datos)]
+      [codigo, nombre, unidad, stock_minimo, categoria, area, JSON.stringify(datos)]
     );
 
     res.status(201).json(rows[0]);
@@ -171,6 +180,7 @@ router.put('/:id', async (req, res, next) => {
       stock_minimo,
       activo,
       categoria,
+      area,
     } = req.body;
 
     const { rows } = await pool.query(
@@ -181,8 +191,9 @@ router.put('/:id', async (req, res, next) => {
          stock_minimo = COALESCE($4, stock_minimo),
          activo       = COALESCE($5, activo),
          categoria    = COALESCE($6, categoria),
-         datos        = COALESCE($8::jsonb, datos)
-       WHERE id = $7
+         area         = COALESCE($7, area),
+         datos        = COALESCE($9::jsonb, datos)
+       WHERE id = $8
        RETURNING *`,
       [
         codigo,
@@ -191,6 +202,7 @@ router.put('/:id', async (req, res, next) => {
         stock_minimo,
         activo,
         categoria,
+        area,
         req.params.id,
         req.body.datos === undefined ? null : JSON.stringify(req.body.datos),
       ]

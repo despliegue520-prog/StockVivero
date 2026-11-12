@@ -1,7 +1,6 @@
 (() => {
   const API_BASE_URL = (['capacitor:', 'ionic:'].includes(location.protocol) || (location.hostname === 'localhost' && !location.port))
-    ? 'https://controldestock.viverolosaromos.com.ar'
-    : '';
+    ? 'https://controldestock.viverolosaromos.com.ar' : '';
   window.stockApiUrl = path => /^https?:\/\//i.test(path) ? path : API_BASE_URL + path;
   window.stockApiCredentials = API_BASE_URL ? 'omit' : 'same-origin';
 
@@ -9,8 +8,10 @@
   const DB_VERSION = 1;
   const CACHE_STORE = 'responses';
   const QUEUE_STORE = 'operations';
+  const CACHE_MAX_AGE = 30 * 60 * 1000;
   let dbPromise;
   let pendientesActuales = 0;
+  let sincronizacionActiva = false;
 
   function abrirDB() {
     if (dbPromise) return dbPromise;
@@ -40,14 +41,16 @@
   function esCambio(options = {}) {
     return ['POST', 'PUT', 'PATCH', 'DELETE'].includes((options.method || 'GET').toUpperCase());
   }
+
   function eliminaProducto(path, options = {}) {
     return (options.method || '').toUpperCase() === 'DELETE' && /^\/productos\/\d+\/?$/.test(path);
   }
-  async function invalidarProductos() {
+
+  async function invalidarCache() {
     try {
       const registros = await transaccion(CACHE_STORE, 'readonly', store => store.getAll());
       for (const registro of registros) {
-        if (registro.path.startsWith('/productos')) await transaccion(CACHE_STORE, 'readwrite', store => store.delete(registro.path));
+        await transaccion(CACHE_STORE, 'readwrite', store => store.delete(registro.path));
       }
     } catch { /* Una falla local no revierte una operación ya confirmada por el servidor. */ }
   }
@@ -115,7 +118,11 @@
   }
 
   async function desdeCache(path) {
-    try { return (await transaccion(CACHE_STORE, 'readonly', store => store.get(path)))?.data ?? null; } catch { return null; }
+    try {
+      const registro = await transaccion(CACHE_STORE, 'readonly', store => store.get(path));
+      if (!registro || Date.now() - registro.guardado > CACHE_MAX_AGE) return null;
+      return registro.data ?? null;
+    } catch { return null; }
   }
 
   async function encolar(path, options = {}) {
@@ -139,7 +146,7 @@
       if (eliminaProducto(path, options) && !navigator.onLine) throw new Error('Necesitás conexión para eliminar un producto del stock.');
       try {
         const response = await enviar(path, options);
-        if (response.ok && eliminaProducto(path, options)) await invalidarProductos();
+        if (response.ok && esCambio(options)) await invalidarCache();
         if (response.ok && !esCambio(options)) await cachear(path, await response.clone().json().catch(() => null));
         if (!response.ok && !esCambio(options) && response.status >= 500) {
           const cached = await desdeCache(path);
@@ -162,26 +169,32 @@
     },
 
     async sincronizar() {
-      const cola = await listarPendientes();
-      if (!cola.length || !navigator.onLine) { await actualizarIndicador(); return; }
-      let sincronizadas = 0;
-      for (const item of cola.sort((a, b) => a.creado - b.creado)) {
-        try {
-          const response = await enviar(item.path, item.options);
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          if (eliminaProducto(item.path, item.options)) await invalidarProductos();
-          await transaccion(QUEUE_STORE, 'readwrite', store => store.delete(item.id));
-          sincronizadas++;
-        } catch {
-          item.intentos = (item.intentos || 0) + 1;
-          item.ultimoIntento = Date.now();
-          await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
+      if (sincronizacionActiva) return;
+      sincronizacionActiva = true;
+      try {
+        const cola = await listarPendientes();
+        if (!cola.length || !navigator.onLine) { await actualizarIndicador(); return; }
+        let sincronizadas = 0;
+        for (const item of cola.sort((a, b) => a.creado - b.creado)) {
+          try {
+            const response = await enviar(item.path, item.options);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            await transaccion(QUEUE_STORE, 'readwrite', store => store.delete(item.id));
+            sincronizadas++;
+          } catch {
+            item.intentos = (item.intentos || 0) + 1;
+            item.ultimoIntento = Date.now();
+            await transaccion(QUEUE_STORE, 'readwrite', store => store.put(item));
+          }
         }
+        if (sincronizadas) await invalidarCache();
+        const restantes = await listarPendientes();
+        if (restantes.length) mensajeOffline(`${restantes.length} operación(es) siguen pendientes de sincronizar.`);
+        else if (sincronizadas) mensajeOffline('Todo sincronizado correctamente.');
+        await actualizarIndicador();
+      } finally {
+        sincronizacionActiva = false;
       }
-      const restantes = await listarPendientes();
-      if (restantes.length) mensajeOffline(`${restantes.length} operación(es) siguen pendientes de sincronizar.`);
-      else if (sincronizadas) mensajeOffline('Todo sincronizado correctamente.');
-      await actualizarIndicador();
     },
 
     pendientes() { return pendientesActuales; },

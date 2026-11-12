@@ -219,6 +219,50 @@
     .categorias a { padding:1.25rem; transition:background .15s,border-color .15s; font-weight:600; } .categorias a:hover { border-color:var(--ac); background:var(--bg); } .categorias a[aria-current] { background:var(--ac); color:white; }
     #msg:empty { display:none; } #msg { margin:0; padding:.75rem 1rem; border-radius:8px; background:var(--card); border-left:3px solid currentColor; }
     .vacio { text-align:center; color:var(--mut); padding:2.5rem 1rem; }
+    .produccion-consulta { display:grid; gap:1rem; }
+    .produccion-consulta textarea { min-height:86px; resize:vertical; }
+    .produccion-campos { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
+    .produccion-resultado { margin-top:1rem; }
+    .produccion-resumen-titulo { margin:1.4rem 0 .15rem; color:#193c2c; font-size:1rem; }
+    .produccion-resumen-ayuda { margin:.15rem 0 1rem; color:#718075; font-size:.82rem; }
+    .produccion-lista { display:grid; gap:.65rem; margin-top:1rem; }
+    .produccion-item { display:flex; justify-content:space-between; gap:1rem; padding:.8rem 1rem; border:1px solid #d8e5d7; border-radius:10px; background:#fff !important; color:#193c2c !important; box-shadow:0 3px 10px #193c2c0d; }
+    .produccion-item strong { color:#193c2c !important; }
+    .produccion-item span { color:#5d6b61 !important; }
+    .produccion-item { display:grid; grid-template-columns:minmax(220px,1.4fr) repeat(3,minmax(115px,.7fr)); align-items:center; }
+    .produccion-item .produccion-cantidad { display:grid; gap:.15rem; color:#5d6b61 !important; font-size:.78rem; }
+    .produccion-item .produccion-cantidad b { color:#193c2c !important; font-size:.92rem; }
+    .produccion-item .produccion-estado { justify-self:end; padding:.3rem .6rem; border-radius:999px; background:#e6f4e8; color:#286347 !important; font-size:.72rem; font-weight:750; }
+    .produccion-item > span:not(.produccion-cantidad):not(.produccion-estado) { display:none; }
+    .produccion-item.faltante .produccion-estado { background:#ffe5e0; color:#a62f2f !important; }
+    .produccion-item.faltante { border-color:#d66b61; background:#fff7f5 !important; }
+    .produccion-item.faltante strong, .produccion-item.faltante span { color:#a62f2f !important; }
+    .produccion-ayuda { color:var(--mut); font-size:.82rem; }
+    .produccion-ejemplos { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin-top:.25rem; }
+    .produccion-ejemplos span { color:var(--mut); font-size:.8rem; font-weight:700; }
+    .produccion-ejemplos button { min-height:36px; padding:.45rem .7rem; border:1px solid #c9ddca; border-radius:999px; background:#f1f7ef; color:#24583e; font-size:.78rem; }
+    .produccion-ejemplos button:hover { background:#e2f0e2; }
+    section[data-panel="produccion"] { max-width:1120px; }
+    section[data-panel="produccion"] > h2 { margin-bottom:.25rem; font-size:1.55rem; }
+    section[data-panel="produccion"] > .descripcion { max-width:760px; margin-bottom:1.35rem; }
+    section[data-panel="produccion"] .produccion-consulta { grid-template-columns:1fr; align-items:stretch; padding:0; border:0; border-radius:0; background:transparent !important; color:#193c2c; }
+    section[data-panel="produccion"] .produccion-consulta > label { grid-row:auto; }
+    section[data-panel="produccion"] .produccion-ejemplos { display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; }
+    section[data-panel="produccion"] .produccion-ejemplos span { margin-right:.25rem; }
+    section[data-panel="produccion"] .produccion-ejemplos button { text-align:left; }
+    section[data-panel="produccion"] #consultar-produccion { width:auto; min-width:190px; }
+    section[data-panel="produccion"] .produccion-campos { padding:0; border:0; border-radius:0; background:transparent !important; }
+    section[data-panel="produccion"] .produccion-campos label { color:#405746; }
+    section[data-panel="produccion"] .produccion-consulta textarea { width:100%; background:#fff !important; color:#193c2c !important; border-color:#cbd9cf; }
+    section[data-panel="produccion"] #produccion-mensaje { min-height:1.5rem; margin:.8rem 0; color:var(--mut); }
+    section[data-panel="produccion"] #produccion-mensaje.ok { color:#286347; }
+    section[data-panel="produccion"] #produccion-mensaje.error { color:#a62f2f; }
+    section[data-panel="produccion"] #calcular-produccion { background:#8bc99d; color:#153c2b; font-weight:750; }
+    section[data-panel="produccion"] .produccion-resultado > .indicadores { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    section[data-panel="produccion"] .produccion-resultado > .indicadores strong { font-size:1.55rem; overflow-wrap:anywhere; }
+    @media(prefers-color-scheme:dark) { section[data-panel="produccion"] .produccion-consulta { background:transparent !important; color:#e5eee7; } section[data-panel="produccion"] .produccion-campos { background:transparent !important; } section[data-panel="produccion"] .produccion-campos label { color:#c4d2c5; } .produccion-item { border-color:#3d5a45; background:#20382a !important; color:#e5eee7 !important; } .produccion-item strong { color:#e5eee7 !important; } .produccion-item span { color:#b7c8ba !important; } .produccion-item.faltante { background:#402522 !important; border-color:#c7655d; } .produccion-item.faltante strong, .produccion-item.faltante span { color:#ffb0a7 !important; } }
+    @media(prefers-color-scheme:dark) { .produccion-item .produccion-cantidad b { color:#e5eee7 !important; } .produccion-item .produccion-estado { background:#294a35; color:#bfe2c7 !important; } .produccion-item.faltante .produccion-estado { background:#5a302c; color:#ffb0a7 !important; } }
+    @media(max-width:700px) { section[data-panel="produccion"] .produccion-ejemplos span { width:100%; } section[data-panel="produccion"] .produccion-resultado > .indicadores { grid-template-columns:1fr; gap:.65rem; } section[data-panel="produccion"] .produccion-resultado > .indicadores div { min-width:0; padding:.9rem 1rem; } section[data-panel="produccion"] .produccion-resultado > .indicadores strong { font-size:1.4rem; line-height:1.25; overflow-wrap:normal; word-break:normal; } .produccion-campos { grid-template-columns:1fr 1fr; } .produccion-item { grid-template-columns:1fr 1fr; align-items:start; gap:.6rem; } .produccion-item strong { grid-column:1/-1; } .produccion-item .produccion-estado { justify-self:start; } }
     @media(max-width:600px) { main { padding:1.2rem .75rem 3rem; } section { padding:1rem; } .bienvenida { align-items:start; } .intro { font-size:.8rem; } .header-badge { display:none; } .indicadores { gap:.5rem; } .indicadores div { padding:.8rem; } .indicadores span { font-size:.7rem; } .indicadores strong { font-size:1.5rem; } .contexto { flex-wrap:wrap; } .contexto label { width:100%; } .contexto span { padding:0; } .pestanas button { padding:.8rem; } .bienvenida .secundario { font-size:.75rem; } form { grid-template-columns:1fr; } }
     @media(prefers-color-scheme:dark) { :root { --bg:#14201a; --card:#1d2b23; --txt:#e5eee7; --mut:#a3b5a8; --ac:#79c69a; --bd:#334a3b; --bad:#ff938a; --ok:#79c69a; } button { color:#14201a; } .header-badge { background:#2c4132; color:#b4dfc0; } .marca-icono { color:#14201a; } .categorias a[aria-current] { color:#14201a; } }
       [hidden] { display:none !important; }
@@ -338,11 +382,12 @@
     <nav class="pestanas" aria-label="Secciones del inventario">
       <button type="button" data-vista="productos" aria-current="page">Productos</button>
       <button type="button" data-vista="movimientos">Movimientos</button>
+      <button type="button" data-vista="produccion">ProducciÃ³n IA</button>
       <button type="button" data-vista="categorias">Categorías</button>
       <button type="button" data-vista="nuevo">Nuevo producto</button>
       <button type="button" data-vista="editar">Editar productos</button>
     </nav>
-    <div class="contexto" id="contexto"><label>Ver categoría<select id="filtro-categoria"><option value="">Todas las categorías</option></select></label><div class="selector-categoria-movil"><button id="filtro-categoria-boton" type="button" aria-expanded="false" aria-controls="filtro-categoria-menu">Todas las categorías</button><div id="filtro-categoria-menu" class="selector-categoria-menu" hidden></div></div><span id="contexto-texto">Inventario completo</span></div>
+    <div class="contexto" id="contexto"><label>Ver categoría<select id="filtro-categoria"><option value="">Todas las categorías</option></select></label><label>Ver área<select id="filtro-area"><option value="">Todas las áreas</option></select></label><div class="selector-categoria-movil"><button id="filtro-categoria-boton" type="button" aria-expanded="false" aria-controls="filtro-categoria-menu">Todas las categorías</button><div id="filtro-categoria-menu" class="selector-categoria-menu" hidden></div></div><span id="contexto-texto">Inventario completo</span></div>
     <div class="indicadores" id="indicadores" aria-label="Resumen del inventario"><div><span>Productos</span><strong id="total-productos">—</strong></div><div><span>Con stock bajo</span><strong id="total-bajos">—</strong></div><div><span>Categorías disponibles</span><strong id="total-categorias">—</strong></div></div>
     <p id="msg" role="status" aria-live="polite"></p>
 
@@ -357,6 +402,35 @@
         class="categorias"
         aria-label="Categorías del stock">
       </nav>
+    </section>
+
+    <section aria-labelledby="h-produccion" data-panel="produccion" hidden>
+      <h2 id="h-produccion">Calculadora de producciÃ³n</h2>
+      <p class="descripcion">DescribÃ­ lo que querÃ©s producir. La IA completa los datos y vos los revisÃ¡s antes de calcular.</p>
+      <form id="f-produccion-consulta" class="produccion-consulta">
+        <label>Consulta<textarea id="consulta-produccion" maxlength="500" placeholder="Ej.: Necesito producir 100 plantas de Arauco en etapa de crecimiento, en macetas de 3 litros."></textarea></label>
+        <div id="ejemplos-produccion" class="produccion-ejemplos" aria-label="Ejemplos de consultas"></div>
+        <div><button id="consultar-produccion" type="submit">Consultar con IA</button></div>
+      </form>
+      <p class="produccion-ayuda">La consulta usa la sesiÃ³n actual de Stock. Si la IA no estÃ¡ configurada, podÃ©s completar los campos manualmente.</p>
+      <div class="produccion-campos">
+        <label>Variedad<input id="produccion-variedad" maxlength="150"></label>
+        <label>Etapa<input id="produccion-etapa" maxlength="100" placeholder="Ej.: crecimiento"></label>
+        <label>Cantidad de plantas<input id="produccion-cantidad" type="number" min="1" step="1"></label>
+        <label>Maceta (litros)<input id="produccion-maceta" type="number" min="0.1" step="0.1"></label>
+      </div>
+      <div style="margin-top:1rem"><button id="calcular-produccion" type="button">Calcular insumos</button></div>
+      <p id="produccion-mensaje" role="status" aria-live="polite"></p>
+      <div id="produccion-resultado" class="produccion-resultado" hidden>
+        <h3 class="produccion-resumen-titulo">Resumen de producción</h3>
+        <p class="produccion-resumen-ayuda">Estos son los insumos necesarios comparados con el stock disponible.</p>
+        <div class="indicadores">
+          <div><span>Variedad</span><strong id="resultado-variedad">—</strong></div>
+          <div><span>Etapa</span><strong id="resultado-etapa">—</strong></div>
+          <div><span>Plantas</span><strong id="resultado-plantas">—</strong></div>
+        </div>
+        <div id="produccion-lista" class="produccion-lista"></div>
+      </div>
     </section>
 
     <section aria-labelledby="h-prod" data-panel="productos">
@@ -388,6 +462,7 @@
             <tr>
               <th>Código</th>
               <th>Nombre</th>
+              <th>Área</th>
               <th>Categoría</th>
               <th>Unidad</th>
               <th>Stock</th>
@@ -430,6 +505,11 @@
             id="nueva-categoria"
             required>
           </select>
+        </label>
+
+        <label>
+          Área
+          <select name="area" id="nueva-area" required></select>
         </label>
 
         <label>
@@ -534,8 +614,39 @@
     let productosActuales = [];
     let productoEditando = null;
     let categoriaActual = '';
+    let areaActual = '';
+    let areas = [];
     let apiKey = sessionStorage.getItem('apiKey') || '';
     let authToken = sessionStorage.getItem('authToken') || '';
+
+    // Normaliza los textos de la calculadora aunque el archivo se abra con una codificaciÃ³n antigua.
+    $('h-produccion').textContent = 'Calculadora de producci\u00f3n';
+    document.querySelector('[data-vista="produccion"]').textContent = 'Producci\u00f3n IA';
+    $('consultar-produccion').textContent = 'Consultar con IA';
+    document.querySelector('#h-produccion + .descripcion').textContent = 'Describ\u00ed lo que quer\u00e9s producir. La IA hace el c\u00e1lculo.';
+    document.querySelector('.produccion-ayuda').textContent = 'La consulta usa la sesi\u00f3n actual de Stock. Si la IA no est\u00e1 configurada, pod\u00e9s completar los campos manualmente.';
+    document.querySelector('#f-produccion-consulta > label').firstChild.textContent = '\u00bfQu\u00e9 quer\u00e9s producir?';
+    $('produccion-variedad').parentElement.firstChild.textContent = 'Variedad';
+    $('produccion-etapa').parentElement.firstChild.textContent = 'Etapa de producci\u00f3n';
+    $('produccion-cantidad').parentElement.firstChild.textContent = 'Cantidad de plantas';
+    $('produccion-maceta').parentElement.firstChild.textContent = 'Tama\u00f1o de maceta (litros)';
+    const ejemplosProduccion = [
+      ['Caso normal', 'Necesito producir 100 plantas de Arauco en crecimiento, en macetas de 3 litros.'],
+      ['Con faltante', 'Necesito producir 1000 plantas de Arauco en crecimiento, en macetas de 3 litros.'],
+      ['Dato incompleto', 'Quiero preparar 25 plantas de Arbequina.'],
+      ['Otra etapa', 'Necesito producir 50 plantas en etapa de enraizamiento, con macetas de 3 litros.'],
+    ];
+    ejemplosProduccion.forEach(([titulo, texto]) => {
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.textContent = titulo;
+      boton.title = texto;
+      boton.addEventListener('click', () => {
+        $('consulta-produccion').value = texto;
+        $('consulta-produccion').focus();
+      });
+      $('ejemplos-produccion').appendChild(boton);
+    });
 
     function mostrarAplicacion() {
       document.body.classList.remove('auth-locked');
@@ -607,9 +718,11 @@
     }
 
     function filtroCategoria() {
-      return categoriaActual
-        ? '?categoria=' + encodeURIComponent(categoriaActual)
-        : '';
+      const params = new URLSearchParams();
+      if (categoriaActual) params.set('categoria', categoriaActual);
+      if (areaActual) params.set('area', areaActual);
+      const query = params.toString();
+      return query ? '?' + query : '';
     }
 
     function accionesProducto(producto) {
@@ -652,7 +765,7 @@
       $('total-bajos').textContent = productosActuales.filter(p => p.activo && Number(p.stock) <= Number(p.stock_minimo)).length;
       if (!productos.length) {
         const tr = fila([{ texto: 'No hay productos para estos filtros.', clase: 'vacio' }]);
-        tr.firstChild.colSpan = 7;
+        tr.firstChild.colSpan = 8;
         $('productos').appendChild(tr);
       }
       productos.forEach(p => {
@@ -666,6 +779,7 @@
         $('productos').appendChild(fila([
           { texto: p.codigo },
           { texto: p.nombre },
+          { texto: p.area || 'general' },
           { texto: categoria?.nombre || 'General' },
           { texto: p.unidad },
           {
@@ -744,6 +858,101 @@
       });
     }
 
+    function mensajeProduccion(texto, tipo = '') {
+      const elemento = $('produccion-mensaje');
+      elemento.textContent = texto;
+      elemento.className = tipo;
+    }
+
+    function completarProduccion(datos) {
+      $('produccion-variedad').value = datos.variedad || '';
+      $('produccion-etapa').value = datos.etapa || '';
+      $('produccion-cantidad').value = datos.cantidad_plantas ?? '';
+      $('produccion-maceta').value = datos.maceta_litros ?? '';
+    }
+
+    $('f-produccion-consulta').addEventListener('submit', async event => {
+      event.preventDefault();
+      const consulta = $('consulta-produccion').value.trim();
+      if (!consulta) return mensajeProduccion('Escribí una consulta de producción.', 'error');
+      const boton = $('consultar-produccion');
+      boton.disabled = true;
+      mensajeProduccion('Interpretando la consulta…');
+      try {
+        const datos = await api('/api/produccion/interpretar', {
+          method: 'POST',
+          body: JSON.stringify({ consulta }),
+        });
+        completarProduccion(datos);
+        mensajeProduccion('Revisá los datos y presioná «Calcular insumos».', 'ok');
+      } catch (error) {
+        mensajeProduccion(error.message, 'error');
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
+    $('calcular-produccion').addEventListener('click', async () => {
+      const cantidad = Number($('produccion-cantidad').value);
+      const maceta = Number($('produccion-maceta').value);
+      if (!Number.isSafeInteger(cantidad) || cantidad < 1 || !Number.isFinite(maceta) || maceta <= 0) {
+        return mensajeProduccion('Indicá cuántas plantas querés producir y el tamaño de maceta en litros.', 'error');
+      }
+
+      const boton = $('calcular-produccion');
+      boton.disabled = true;
+      mensajeProduccion('Calculando con el stock actual…');
+      try {
+        const todos = await api('/productos');
+        const insumos = todos.filter(producto => {
+          const datos = producto.datos || {};
+          return producto.activo !== false && datos.uso === 'produccion' && Number.isFinite(Number(datos.consumo_por_planta));
+        });
+        if (!insumos.length) throw new Error('No hay fichas de producción simuladas cargadas.');
+
+        $('resultado-variedad').textContent = $('produccion-variedad').value || 'Sin especificar';
+        $('resultado-etapa').textContent = $('produccion-etapa').value || 'Sin especificar';
+        $('resultado-plantas').textContent = cantidad;
+        $('produccion-lista').replaceChildren();
+
+        insumos.forEach(producto => {
+          const datos = producto.datos || {};
+          const litrosFicha = Number(datos.maceta_litros);
+          if (Number.isFinite(litrosFicha) && litrosFicha !== maceta) return;
+          const necesario = cantidad * Number(datos.consumo_por_planta);
+          const disponible = Number(producto.stock || 0);
+          const faltante = Math.max(0, necesario - disponible);
+          const item = document.createElement('div');
+          item.className = 'produccion-item' + (faltante > 0 ? ' faltante' : '');
+          const nombre = document.createElement('strong');
+          nombre.textContent = producto.nombre;
+          const crearDatoResultado = (titulo, valor) => {
+            const bloque = document.createElement('span');
+            bloque.className = 'produccion-cantidad';
+            const etiqueta = document.createElement('small');
+            etiqueta.textContent = titulo;
+            const numero = document.createElement('b');
+            numero.textContent = `${valor} ${producto.unidad}`;
+            bloque.append(etiqueta, numero);
+            return bloque;
+          };
+          const estado = document.createElement('span');
+          estado.className = 'produccion-estado';
+          estado.textContent = faltante > 0 ? 'Falta stock' : 'Disponible';
+          const detalle = document.createElement('span');
+          detalle.textContent = `Necesario: ${necesario.toFixed(2)} ${producto.unidad} · Disponible: ${disponible} · Faltante: ${faltante.toFixed(2)}`;
+          item.append(nombre, crearDatoResultado('Necesario', necesario.toFixed(2)), crearDatoResultado('Disponible', disponible), crearDatoResultado('Faltante', faltante.toFixed(2)), estado, detalle);
+          $('produccion-lista').appendChild(item);
+        });
+        $('produccion-resultado').hidden = false;
+        mensajeProduccion('Cálculo realizado con stock.stock_actual.', 'ok');
+      } catch (error) {
+        mensajeProduccion(error.message, 'error');
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
     async function refrescar() {
       await Promise.all([
         cargarProductos(),
@@ -821,6 +1030,7 @@
       productoEditando = null;
       $('f-prod').reset();
       $('nueva-categoria').value = categoriaActual || 'general';
+      $('nueva-area').value = 'general';
       $('h-nuevo').textContent = 'Nuevo producto';
       $('guardar-producto').textContent = 'Crear producto';
       $('cancelar-edicion-producto').hidden = true;
@@ -838,6 +1048,7 @@
       $('f-prod').elements.unidad.value = producto.unidad || 'unidad';
       $('f-prod').elements.stock_minimo.value = producto.stock_minimo ?? 0;
       $('nueva-categoria').value = producto.categoria || 'general';
+      $('nueva-area').value = producto.area || 'general';
       dibujarCampos();
       Object.entries(producto.datos || {}).forEach(([clave, valor]) => {
         const campo = [...document.querySelectorAll('#campos-especificos input, #campos-especificos select')]
@@ -958,6 +1169,7 @@
 
     async function iniciar() {
       categorias = await api('/categorias');
+      areas = await api('/areas');
       $('total-categorias').textContent = categorias.length;
       categorias.forEach(c => {
         const option = document.createElement('option');
@@ -1011,11 +1223,20 @@
         $('nueva-categoria').appendChild(option);
       });
 
+      areas.forEach(a => {
+        const option = document.createElement('option');
+        option.value = a.slug;
+        option.textContent = a.nombre;
+        $('nueva-area').appendChild(option);
+      });
+
       $('nueva-categoria').value =
         categoriaActual || 'general';
+      $('nueva-area').value = 'general';
       dibujarCampos();
 
       $('filtro-categoria').value = categoriaActual;
+      $('filtro-area').value = areaActual;
       $('contexto-texto').textContent = nombre ? 'Sector: ' + nombre : 'Inventario completo';
       await refrescar();
     }
@@ -1099,13 +1320,17 @@
     function leerVista() {
       const [vista, subvista] = location.hash.slice(1).split('/');
       movimientoVista = subvista === 'registro' ? 'registro' : 'historial';
-      mostrarVista(['productos', 'movimientos', 'categorias', 'nuevo'].includes(vista) ? vista : 'productos');
+      mostrarVista(['productos', 'movimientos', 'categorias', 'nuevo', 'produccion'].includes(vista) ? vista : 'productos');
     }
     window.addEventListener('hashchange', leerVista);
     leerVista();
     $('filtro-categoria').addEventListener('change', event => {
       actualizarSelectorCategoriaMovil();
       location.href = (event.target.value ? '/' + event.target.value + '/' : '/') + location.hash;
+    });
+    $('filtro-area').addEventListener('change', async event => {
+      areaActual = event.target.value;
+      await refrescar();
     });
     $('actualizar').addEventListener('click', async () => {
       $('actualizar').disabled = true;
