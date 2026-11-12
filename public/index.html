@@ -392,8 +392,8 @@
     <div class="indicadores" id="indicadores" aria-label="Resumen del inventario"><div><span>Productos</span><strong id="total-productos">—</strong></div><div><span>Con stock bajo</span><strong id="total-bajos">—</strong></div><div><span>Categorías disponibles</span><strong id="total-categorias">—</strong></div></div>
     <p id="msg" role="status" aria-live="polite"></p>
     <section id="alertas-stock" class="alertas-stock" data-panel="productos" hidden aria-labelledby="h-alertas-stock">
-      <h2 id="h-alertas-stock">Alertas de stock</h2>
-      <div id="lista-alertas-stock"></div>
+      <h2 id="h-alertas-stock"><button id="toggle-alertas-stock" class="titulo-alertas-stock" type="button" aria-expanded="false">Alertas de stock <span aria-hidden="true">⌄</span></button></h2>
+      <div id="lista-alertas-stock" hidden></div>
     </section>
 
     <nav id="submovimientos" class="subpestanas" aria-label="Movimientos" hidden>
@@ -1540,6 +1540,14 @@
       apiKey = '';
       authToken = '';
       location.reload();
+    });
+
+    const toggleAlertasStock = $('toggle-alertas-stock');
+    const listaAlertasStock = $('lista-alertas-stock');
+    toggleAlertasStock?.addEventListener('click', () => {
+      const abierto = toggleAlertasStock.getAttribute('aria-expanded') === 'true';
+      toggleAlertasStock.setAttribute('aria-expanded', String(!abierto));
+      if (listaAlertasStock) listaAlertasStock.hidden = abierto;
     });
 
     const campanaNotificaciones = $('campana-notificaciones');

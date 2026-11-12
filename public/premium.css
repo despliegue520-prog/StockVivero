@@ -373,7 +373,11 @@ section[data-panel="categorias"] > #categorias { display: grid; }
 .pendiente-offline-item small { color: #8a642b; overflow-wrap: anywhere; }
 .pendiente-offline-item button { min-height: 36px; padding: .45rem .65rem; font-size: .75rem; }
 .alertas-stock { border-color: #efc1b2; background: #fff8f5; max-height: 13rem; overflow-y: auto; }
-.alertas-stock h2 { color: #a33b20; margin-bottom: .7rem; }
+.alertas-stock h2 { color: #a33b20; margin: 0; }
+.titulo-alertas-stock { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 36px; padding: .2rem 0; border: 0; border-radius: 0; background: transparent; color: #a33b20; font-size: 1rem; text-align: left; }
+.titulo-alertas-stock:hover { background: transparent; color: #7e2e1b; filter: none; }
+.titulo-alertas-stock span { font-size: 1.25rem; transition: transform .18s; }
+.titulo-alertas-stock[aria-expanded="true"] span { transform: rotate(180deg); }
 .alerta-stock-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(11rem, auto) auto; align-items: center; gap: .8rem; padding: .5rem 0; border-top: 1px solid #f1d8cf; color: #713526; font-size: .82rem; }
 .alerta-stock-item span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .alerta-stock-item button { min-height: 36px; padding: .4rem .65rem; font-size: .75rem; white-space: nowrap; }
@@ -397,7 +401,7 @@ section[data-panel="categorias"] > #categorias { display: grid; }
   .pendiente-offline-item > span:last-child { display: flex; gap: .4rem; }
   .pendiente-offline-item button { flex: 1; }
   .alertas-stock { padding: .75rem; }
-  .alertas-stock h2 { margin-bottom: .4rem; font-size: .95rem; }
+  .alertas-stock h2 { margin-bottom: 0; font-size: .95rem; }
   .alerta-stock-item { align-items: center; flex-direction: row; gap: .45rem; padding: .45rem 0; font-size: .76rem; }
   .alerta-stock-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
   .alerta-stock-item button { width: auto; min-height: 34px; padding: .35rem .45rem; font-size: .68rem; }
